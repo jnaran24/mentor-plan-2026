@@ -39,6 +39,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .stat-label{font-size:12px;opacity:.7}
 .progress-bg{margin-top:12px;background:rgba(255,255,255,.15);border-radius:6px;height:8px;overflow:hidden}
 .progress-fill{background:#10b981;height:8px;border-radius:6px;transition:width .4s ease}
+.btn-mentees{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-mentees:hover{background:rgba(255,255,255,.2)}
 .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
 .meta-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s}
 .meta-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
@@ -60,7 +62,7 @@ select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px
 .item:hover{background:#f8fafc}
 .chk{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:12px;color:#fff;font-weight:700;transition:all .2s}
 .item-body{flex:1;min-width:0}
-.item-text{font-size:13px;line-height:1.4;transition:all .2s}
+.item-text{font-size:13px;line-height:1.4}
 .item-meta{font-size:11px;color:#94a3b8;margin-top:2px}
 .tag{padding:1px 6px;border-radius:4px;font-weight:600;font-size:11px}
 .note-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:6px;vertical-align:middle}
@@ -81,18 +83,17 @@ select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px
 @keyframes spin{to{transform:rotate(360deg)}}
 .sync-toast{position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:1000}
 .sync-toast.show{opacity:1}
-
 /* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:#fff;border-radius:14px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:slideUp .25s ease}
+.modal{background:#fff;border-radius:14px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-header{padding:20px 24px 0;display:flex;align-items:flex-start;gap:12px}
 .modal-color-bar{width:5px;min-height:40px;border-radius:3px;flex-shrink:0;margin-top:2px}
 .modal-title-area{flex:1;min-width:0}
 .modal-title{font-size:16px;font-weight:700;line-height:1.4;display:flex;align-items:flex-start;gap:8px}
 .modal-title-text{flex:1}
-.btn-edit-title{background:none;border:none;cursor:pointer;padding:4px;border-radius:4px;color:#94a3b8;font-size:14px;flex-shrink:0;margin-top:1px}
+.btn-edit-title{background:none;border:none;cursor:pointer;padding:4px;border-radius:4px;color:#94a3b8;font-size:14px;flex-shrink:0}
 .btn-edit-title:hover{background:#f1f5f9;color:#475569}
 .modal-title-input{width:100%;font-size:16px;font-weight:700;border:1px solid #6366f1;border-radius:6px;padding:6px 10px;font-family:inherit;outline:none;line-height:1.4}
 .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;padding:4px 8px;border-radius:6px;flex-shrink:0}
@@ -108,11 +109,41 @@ select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px
 .modal-notes:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 .modal-notes::placeholder{color:#94a3b8}
 .modal-notes-readonly{width:100%;min-height:60px;padding:10px 12px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;font-size:14px;line-height:1.5;color:#475569;white-space:pre-wrap}
-.modal-footer{padding:12px 24px 20px;display:flex;justify-content:flex-end}
-.btn-save{padding:8px 20px;border-radius:8px;border:none;background:#1e3a5f;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
-.btn-save:hover{background:#0f172a}
-
-@media(max-width:700px){.kanban{grid-template-columns:1fr}.stats-row{gap:10px}.stat-box{min-width:70px;padding:8px 10px}.stat-num{font-size:22px}.login-card{padding:32px 24px}.modal{max-width:95vw}}
+/* MENTEES */
+.mentees-panel{max-width:620px;width:100%}
+.mentee-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px}
+.mentee-name{flex:1;font-size:14px;font-weight:600}
+.mentee-badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.mentee-badge.junior{background:#dbeafe;color:#1d4ed8}
+.mentee-badge.senior{background:#fef3c7;color:#b45309}
+.mentee-actions{display:flex;gap:4px}
+.mentee-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;color:#64748b;transition:all .15s}
+.mentee-btn:hover{background:#f1f5f9;color:#1e293b}
+.mentee-btn.danger:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+.mentee-add-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mentee-input{flex:1;min-width:150px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit}
+.mentee-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.mentee-select{padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;background:#fff}
+.btn-add-mentee{padding:8px 16px;border:none;border-radius:8px;background:#1e3a5f;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.btn-add-mentee:hover{background:#0f172a}
+.mentee-edit-row{display:flex;gap:6px;flex:1;align-items:center}
+.mentee-edit-input{flex:1;padding:5px 8px;border:1px solid #6366f1;border-radius:6px;font-size:13px;font-family:inherit}
+.mentee-edit-select{padding:5px 8px;border:1px solid #6366f1;border-radius:6px;font-size:13px}
+.mentee-edit-save{padding:4px 10px;border:none;border-radius:6px;background:#10b981;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.mentee-edit-cancel{padding:4px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#64748b;font-size:12px;cursor:pointer}
+.mentee-meeting{padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-top:8px}
+.mentee-meeting-label{font-size:12px;color:#64748b;font-weight:600;margin-bottom:4px}
+.mentee-meeting-date{font-size:15px;font-weight:600;color:#1e3a5f}
+.mentee-meeting-none{font-size:14px;color:#94a3b8;font-style:italic}
+.mentee-date-input{padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;width:100%}
+.mentee-date-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.mentee-notes-full{width:100%;min-height:200px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.6}
+.mentee-notes-full:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.mentee-notes-full::placeholder{color:#94a3b8}
+.mentee-modal-name{font-size:20px;font-weight:700;margin-bottom:4px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:16px}
+.back-btn:hover{background:#f1f5f9;color:#1e293b}
+@media(max-width:700px){.kanban{grid-template-columns:1fr}.stats-row{gap:10px}.stat-box{min-width:70px;padding:8px 10px}.stat-num{font-size:22px}.login-card{padding:32px 24px}.modal{max-width:95vw}.mentee-add-row{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -121,331 +152,295 @@ select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px
 <div id="sync-toast" class="sync-toast"></div>
 <script>
 firebase.initializeApp({
-  apiKey: "AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",
-  authDomain: "plan-mentor-camilo-naranjo.firebaseapp.com",
-  projectId: "plan-mentor-camilo-naranjo",
-  storageBucket: "plan-mentor-camilo-naranjo.firebasestorage.app",
-  messagingSenderId: "291479276112",
-  appId: "1:291479276112:web:cfaf874d088697f0dedf55",
-  measurementId: "G-WYVJ639RCS"
+  apiKey:"AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",
+  authDomain:"plan-mentor-camilo-naranjo.firebaseapp.com",
+  projectId:"plan-mentor-camilo-naranjo",
+  storageBucket:"plan-mentor-camilo-naranjo.firebasestorage.app",
+  messagingSenderId:"291479276112",
+  appId:"1:291479276112:web:cfaf874d088697f0dedf55",
+  measurementId:"G-WYVJ639RCS"
 });
-
 const db=firebase.firestore(),auth=firebase.auth(),provider=new firebase.auth.GoogleAuthProvider();
-db.enablePersistence({synchronizeTabs:true}).catch(x=>console.log("Persistence:",x.code));
+db.enablePersistence({synchronizeTabs:true}).catch(x=>console.log("P:",x.code));
 
-const ADMIN_EMAIL="camilo2279@gmail.com",ADMIN_DOC="admin-plan";
+const ADMIN_EMAIL="camilo2279@gmail.com",ADMIN_DOC="admin-plan",MENTEES_DOC="admin-mentees";
 const STATUSES=["pendiente","en progreso","completado"];
 const SC={pendiente:"#94a3b8","en progreso":"#f59e0b",completado:"#10b981"};
 const SL={pendiente:"Pendiente","en progreso":"En progreso",completado:"Completado"};
 const TE={entregable:"📄","reunión":"🤝",piloto:"🚀","guild-ia":"🤖",guild:"🎓",dojo:"💻","medición":"📊",radar:"📡",iniciativa:"💡","guía":"📘",arenacoders:"🏆","formación":"📚","certificación":"🎖️"};
 const MO=["Ene","Feb","Feb-Abr","Mar","Abr","May","May-Jul","Jun","Jun-Dic","Jul","Ago","Ago-Nov","Ago-Feb27","Sep","Oct","Nov","Dic","Todo el año"];
-const QLabels={Q1:"Ene–Mar 2026",Q2:"Abr–Jun 2026",Q3:"Jul–Sep 2026",Q4:"Oct–Dic 2026",ALL:"Todo el año"};
+const QL={Q1:"Ene–Mar 2026",Q2:"Abr–Jun 2026",Q3:"Jul–Sep 2026",Q4:"Oct–Dic 2026",ALL:"Todo el año"};
 
-const INIT={
-meta1:{title:"Adopción de IA en el Equipo CIS",weight:"20%",color:"#6366f1",items:[
-{id:"m1-01",q:"Q1",month:"Feb",text:"Diagnóstico inicial: encuesta de uso de IA actual en el equipo (baseline)",type:"entregable",status:"pendiente",notes:""},
-{id:"m1-02",q:"Q1",month:"Feb",text:"Definir con cada Senior qué herramienta de IA adoptará su célula este año",type:"reunión",status:"pendiente",notes:""},
-{id:"m1-03",q:"Q1",month:"Mar",text:"Piloto IA #1: Validador de código frontend con IA",type:"piloto",status:"pendiente",notes:""},
-{id:"m1-04",q:"Q1",month:"Mar",text:"Sesión Guild de IA #1: 'Prompt Engineering para devs frontend' — Artefacto: Guía de prompts para code review con IA",type:"guild-ia",status:"pendiente",notes:""},
-{id:"m1-05",q:"Q2",month:"Abr",text:"Encuesta trimestral #1 de adopción IA: ¿usaste IA esta semana? ¿en qué? ¿qué impacto tuvo?",type:"medición",status:"pendiente",notes:""},
-{id:"m1-06",q:"Q2",month:"May",text:"Piloto IA #2: Automatización de generación de pruebas unitarias frontend con IA",type:"piloto",status:"pendiente",notes:""},
-{id:"m1-07",q:"Q2",month:"Jun",text:"Sesión Guild de IA #2: 'IA para testing automatizado en React' — Artefacto: Template prompts + guía",type:"guild-ia",status:"pendiente",notes:""},
-{id:"m1-08",q:"Q2",month:"Jun",text:"Documentar Piloto #1: problema, solución IA, resultado medible, decisión",type:"entregable",status:"pendiente",notes:""},
-{id:"m1-09",q:"Q3",month:"Jul",text:"Encuesta trimestral #2 de adopción IA",type:"medición",status:"pendiente",notes:""},
-{id:"m1-10",q:"Q3",month:"Ago",text:"Piloto IA #3: Agente IA para documentación automática de componentes React",type:"piloto",status:"pendiente",notes:""},
-{id:"m1-11",q:"Q3",month:"Sep",text:"Sesión Guild de IA #3: 'Agentes IA aplicados al desarrollo frontend' — Artefacto: PoC + guía",type:"guild-ia",status:"pendiente",notes:""},
-{id:"m1-12",q:"Q3",month:"Sep",text:"Documentar Piloto #2 y #3",type:"entregable",status:"pendiente",notes:""},
-{id:"m1-13",q:"Q3",month:"Sep",text:"Evaluar ≥1 herramienta IA en el Radar Tecnológico",type:"entregable",status:"pendiente",notes:""},
-{id:"m1-14",q:"Q4",month:"Oct",text:"Encuesta trimestral #3 de adopción IA",type:"medición",status:"pendiente",notes:""},
-{id:"m1-15",q:"Q4",month:"Nov",text:"Sesión Guild de IA #4: 'Balance anual IA en el CIS' — Artefacto: Informe de impacto",type:"guild-ia",status:"pendiente",notes:""},
-{id:"m1-16",q:"Q4",month:"Nov",text:"Piloto IA #4 (cap 120%): IA para optimización bundles y performance",type:"piloto",status:"pendiente",notes:""},
-{id:"m1-17",q:"Q4",month:"Dic",text:"Piloto IA #5 (cap 120%): Code review asistido por IA en pipeline CI/CD",type:"piloto",status:"pendiente",notes:""},
-{id:"m1-18",q:"Q4",month:"Dic",text:"Informe final: evidencia adopción ≥80%, pilotos producción, sesiones Guild",type:"entregable",status:"pendiente",notes:""}
-]},
-meta2:{title:"Liderazgo Guild Frontend y Transferencia",weight:"20%",color:"#10b981",items:[
-{id:"m2-01",q:"Q1",month:"Ene",text:"Planificar calendario anual Guild Frontend: 6 sesiones, tema, facilitador, artefacto",type:"entregable",status:"pendiente",notes:""},
-{id:"m2-02",q:"Q1",month:"Feb",text:"Guild Frontend #1: 'Patrones React — Hooks avanzados' — Artefacto: Guía Custom Hooks CIS",type:"guild",status:"pendiente",notes:""},
-{id:"m2-03",q:"Q1",month:"Mar",text:"Dojo #1: Live coding 1h — Compound Components y Render Props",type:"dojo",status:"pendiente",notes:""},
-{id:"m2-04",q:"Q2",month:"Abr",text:"Guild Frontend #2: 'Rendimiento React — useMemo, useCallback' — Artefacto: Checklist performance",type:"guild",status:"pendiente",notes:""},
-{id:"m2-05",q:"Q2",month:"May",text:"Coordinar con arquitectura: ¿cuál API del open core entrega Frontend?",type:"reunión",status:"pendiente",notes:""},
-{id:"m2-06",q:"Q2",month:"Jun",text:"Guild Frontend #3: 'Estado asíncrono — React Query, SWR' — Artefacto: ADR estado asíncrono",type:"guild",status:"pendiente",notes:""},
-{id:"m2-07",q:"Q2",month:"Jun",text:"Dojo #2: Live coding 1h — React Query en caso real de célula",type:"dojo",status:"pendiente",notes:""},
-{id:"m2-08",q:"Q3",month:"Jul",text:"Habilitar API #1 del open core",type:"entregable",status:"pendiente",notes:""},
-{id:"m2-09",q:"Q3",month:"Ago",text:"Guild Frontend #4: 'Monorepo, micro-frontends, Module Federation' — Artefacto: PoC + README",type:"guild",status:"pendiente",notes:""},
-{id:"m2-10",q:"Q3",month:"Sep",text:"Espacio aprendizaje #1: Taller 2h Juniors — 'Componente básico a reutilizable'",type:"dojo",status:"pendiente",notes:""},
-{id:"m2-11",q:"Q4",month:"Oct",text:"Guild Frontend #5: 'Testing avanzado — MSW, Testing Library' — Artefacto: Estándar testing",type:"guild",status:"pendiente",notes:""},
-{id:"m2-12",q:"Q4",month:"Nov",text:"Guild Frontend #6 (cap 120%): 'Accesibilidad y Design Systems' — Artefacto: Guía accesibilidad",type:"guild",status:"pendiente",notes:""},
-{id:"m2-13",q:"Q4",month:"Nov",text:"Habilitar API #2 del open core (cap 120%)",type:"entregable",status:"pendiente",notes:""},
-{id:"m2-14",q:"Q4",month:"Dic",text:"Espacio aprendizaje #2: Workshop — 'Code review efectivo'",type:"dojo",status:"pendiente",notes:""},
-{id:"m2-15",q:"Q4",month:"Dic",text:"Consolidar registro sesiones Guild en Confluence/Notion",type:"entregable",status:"pendiente",notes:""}
-]},
-meta3:{title:"Innovación e IA Aplicada al CIS",weight:"20%",color:"#f59e0b",items:[
-{id:"m3-01",q:"Q1",month:"Feb",text:"Radar Tecnológico Q1: ≥4 tecnologías evaluadas",type:"radar",status:"pendiente",notes:""},
-{id:"m3-02",q:"Q1",month:"Mar",text:"Iniciativa IA #1: Documentar propuesta validador código frontend",type:"iniciativa",status:"pendiente",notes:""},
-{id:"m3-03",q:"Q1",month:"Mar",text:"Priorizar iniciativas que reduzcan FTEs o mejoren velocidad",type:"reunión",status:"pendiente",notes:""},
-{id:"m3-04",q:"Q2",month:"Abr",text:"Implementar Iniciativa IA #1 en producción",type:"iniciativa",status:"pendiente",notes:""},
-{id:"m3-05",q:"Q2",month:"May",text:"Radar Tecnológico Q2: ≥4 tecnologías + resultados pilotos",type:"radar",status:"pendiente",notes:""},
-{id:"m3-06",q:"Q2",month:"Jun",text:"Medir impacto Iniciativa #1: horas, errores, velocidad",type:"medición",status:"pendiente",notes:""},
-{id:"m3-07",q:"Q2",month:"Jun",text:"Iniciativa IA #2: Documentar propuesta automatización documentación",type:"iniciativa",status:"pendiente",notes:""},
-{id:"m3-08",q:"Q3",month:"Ago",text:"Radar Tecnológico Q3: ≥4 tecnologías",type:"radar",status:"pendiente",notes:""},
-{id:"m3-09",q:"Q3",month:"Sep",text:"Implementar Iniciativa IA #2 en producción",type:"iniciativa",status:"pendiente",notes:""},
-{id:"m3-10",q:"Q3",month:"Sep",text:"Medir impacto Iniciativa #2",type:"medición",status:"pendiente",notes:""},
-{id:"m3-11",q:"Q4",month:"Nov",text:"Radar Tecnológico Q4: balance anual",type:"radar",status:"pendiente",notes:""},
-{id:"m3-12",q:"Q4",month:"Nov",text:"Iniciativa IA #3 (cap 120%): tercera automatización",type:"iniciativa",status:"pendiente",notes:""},
-{id:"m3-13",q:"Q4",month:"Dic",text:"Informe final innovación",type:"entregable",status:"pendiente",notes:""}
-]},
-meta4:{title:"Estándares de Calidad y Seguridad",weight:"20%",color:"#ef4444",items:[
-{id:"m4-01",q:"Q1",month:"Feb",text:"Guía #1: 'Arquitectura APIs Frontend' — REST/GraphQL, errores, tipado",type:"guía",status:"pendiente",notes:""},
-{id:"m4-02",q:"Q1",month:"Mar",text:"Configurar SonarQube + checklist OWASP como gate de merge",type:"entregable",status:"pendiente",notes:""},
-{id:"m4-03",q:"Q1",month:"Mar",text:"Sesión adopción con Seniors: validar Guía #1",type:"reunión",status:"pendiente",notes:""},
-{id:"m4-04",q:"Q1",month:"Mar",text:"Verificar: 0 vulnerabilidades críticas al cierre Q1",type:"medición",status:"pendiente",notes:""},
-{id:"m4-05",q:"Q2",month:"May",text:"Guía #2: 'Testing Seguro Frontend' — XSS, CSP, secure headers",type:"guía",status:"pendiente",notes:""},
-{id:"m4-06",q:"Q2",month:"May",text:"Checklist seguridad como gate de cierre en tu tren",type:"entregable",status:"pendiente",notes:""},
-{id:"m4-07",q:"Q2",month:"Jun",text:"Sesión adopción Seniors: Guía #2",type:"reunión",status:"pendiente",notes:""},
-{id:"m4-08",q:"Q2",month:"Jun",text:"Verificar: 0 vulnerabilidades críticas al cierre Q2",type:"medición",status:"pendiente",notes:""},
-{id:"m4-09",q:"Q3",month:"Ago",text:"Auditoría interna seguridad: revisión técnica 2h por tren",type:"entregable",status:"pendiente",notes:""},
-{id:"m4-10",q:"Q3",month:"Sep",text:"Verificar: 0 vulnerabilidades críticas al cierre Q3",type:"medición",status:"pendiente",notes:""},
-{id:"m4-11",q:"Q3",month:"Sep",text:"(Cap 120%) Automatizar escaneo seguridad pre-commit",type:"entregable",status:"pendiente",notes:""},
-{id:"m4-12",q:"Q4",month:"Oct",text:"Guía #3: 'Estándar Componentes Reutilizables CIS'",type:"guía",status:"pendiente",notes:""},
-{id:"m4-13",q:"Q4",month:"Dic",text:"Verificar: 0 vulnerabilidades críticas al cierre Q4",type:"medición",status:"pendiente",notes:""},
-{id:"m4-14",q:"Q4",month:"Dic",text:"Consolidar evidencia: guías, SonarQube, gate OWASP, auditoría",type:"entregable",status:"pendiente",notes:""}
-]},
-meta5:{title:"Desarrollo de Talento Senior y Junior",weight:"20%",color:"#8b5cf6",items:[
-{id:"m5-01",q:"Q1",month:"Feb",text:"Evaluación 1:1 semestral #1 con cada Senior (≥3)",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-02",q:"Q1",month:"Feb",text:"Diseñar plan crecimiento con cada Senior",type:"entregable",status:"pendiente",notes:""},
-{id:"m5-03",q:"Q1",month:"Mar",text:"Identificar High Performers — ruta clara para cada uno",type:"entregable",status:"pendiente",notes:""},
-{id:"m5-04",q:"Q1",month:"Mar",text:"Coordinar preparación Juniors para Arenacoders (≥2, 3 meses anticipación)",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-05",q:"Q2",month:"Abr",text:"Seguimiento mensual Juniors candidatos Arenacoders",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-06",q:"Q2",month:"May",text:"Encuesta NPS interna #1",type:"medición",status:"pendiente",notes:""},
-{id:"m5-07",q:"Q2",month:"Jun",text:"Documentar evolución técnica semestral ≥3 Seniors",type:"entregable",status:"pendiente",notes:""},
-{id:"m5-08",q:"Q3",month:"Jul",text:"Ronda #1 Arenacoders: ≥1 Junior presenta",type:"arenacoders",status:"pendiente",notes:""},
-{id:"m5-09",q:"Q3",month:"Jul",text:"Feedback 1:1 post-Arenacoders",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-10",q:"Q3",month:"Ago",text:"Evaluación 1:1 semestral #2 con cada Senior",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-11",q:"Q4",month:"Oct",text:"Ronda #2 Arenacoders: ≥1 Junior adicional",type:"arenacoders",status:"pendiente",notes:""},
-{id:"m5-12",q:"Q4",month:"Oct",text:"Feedback 1:1 post-Arenacoders ronda 2",type:"reunión",status:"pendiente",notes:""},
-{id:"m5-13",q:"Q4",month:"Nov",text:"Encuesta NPS interna #2 — target ≥8/10",type:"medición",status:"pendiente",notes:""},
-{id:"m5-14",q:"Q4",month:"Nov",text:"(Cap 110%) Preparar 3° Junior Arenacoders",type:"arenacoders",status:"pendiente",notes:""},
-{id:"m5-15",q:"Q4",month:"Dic",text:"Consolidar: Arenacoders, NPS, evaluaciones, High Performers",type:"entregable",status:"pendiente",notes:""}
-]},
-formacion:{title:"Formación Personal del Mentor",weight:"Transversal",color:"#64748b",items:[
-{id:"f-01",q:"Q1",month:"Feb-Abr",text:"Foco 1 — Arquitecto Frontend Moderno: documentar React, patrones, monorepo",type:"formación",status:"pendiente",notes:""},
-{id:"f-02",q:"Q2",month:"May-Jul",text:"Foco 2 — Herramienta validadora de código con IA",type:"formación",status:"pendiente",notes:""},
-{id:"f-03",q:"Q3",month:"Ago-Nov",text:"Foco 3 — Visión Fullstack: backend Java/Spring Boot",type:"formación",status:"pendiente",notes:""},
-{id:"f-04",q:"Q2",month:"Jun-Dic",text:"Certificación Meta Front-End Developer Professional — 6h/semana",type:"certificación",status:"pendiente",notes:""},
-{id:"f-05",q:"Q3",month:"Ago-Feb27",text:"Certificación Google UX Design Professional — 7h/semana",type:"certificación",status:"pendiente",notes:""},
-{id:"f-06",q:"Q1",month:"Todo el año",text:"Liderazgo empático y comunicación efectiva",type:"formación",status:"pendiente",notes:""}
-]}
-};
+const INIT={meta1:{title:"Adopción de IA en el Equipo CIS",weight:"20%",color:"#6366f1",items:[{id:"m1-01",q:"Q1",month:"Feb",text:"Diagnóstico inicial: encuesta de uso de IA actual en el equipo (baseline)",type:"entregable",status:"pendiente",notes:""},{id:"m1-02",q:"Q1",month:"Feb",text:"Definir con cada Senior qué herramienta de IA adoptará su célula este año",type:"reunión",status:"pendiente",notes:""},{id:"m1-03",q:"Q1",month:"Mar",text:"Piloto IA #1: Validador de código frontend con IA",type:"piloto",status:"pendiente",notes:""},{id:"m1-04",q:"Q1",month:"Mar",text:"Sesión Guild de IA #1: 'Prompt Engineering para devs frontend' — Artefacto: Guía de prompts para code review con IA",type:"guild-ia",status:"pendiente",notes:""},{id:"m1-05",q:"Q2",month:"Abr",text:"Encuesta trimestral #1 de adopción IA",type:"medición",status:"pendiente",notes:""},{id:"m1-06",q:"Q2",month:"May",text:"Piloto IA #2: Automatización de pruebas unitarias frontend con IA",type:"piloto",status:"pendiente",notes:""},{id:"m1-07",q:"Q2",month:"Jun",text:"Sesión Guild de IA #2: 'IA para testing automatizado en React' — Artefacto: Template prompts + guía",type:"guild-ia",status:"pendiente",notes:""},{id:"m1-08",q:"Q2",month:"Jun",text:"Documentar Piloto #1: problema, solución IA, resultado medible, decisión",type:"entregable",status:"pendiente",notes:""},{id:"m1-09",q:"Q3",month:"Jul",text:"Encuesta trimestral #2 de adopción IA",type:"medición",status:"pendiente",notes:""},{id:"m1-10",q:"Q3",month:"Ago",text:"Piloto IA #3: Agente IA para documentación automática de componentes React",type:"piloto",status:"pendiente",notes:""},{id:"m1-11",q:"Q3",month:"Sep",text:"Sesión Guild de IA #3: 'Agentes IA aplicados al desarrollo frontend' — Artefacto: PoC + guía",type:"guild-ia",status:"pendiente",notes:""},{id:"m1-12",q:"Q3",month:"Sep",text:"Documentar Piloto #2 y #3",type:"entregable",status:"pendiente",notes:""},{id:"m1-13",q:"Q3",month:"Sep",text:"Evaluar ≥1 herramienta IA en el Radar Tecnológico",type:"entregable",status:"pendiente",notes:""},{id:"m1-14",q:"Q4",month:"Oct",text:"Encuesta trimestral #3 de adopción IA",type:"medición",status:"pendiente",notes:""},{id:"m1-15",q:"Q4",month:"Nov",text:"Sesión Guild de IA #4: 'Balance anual IA en el CIS' — Artefacto: Informe de impacto",type:"guild-ia",status:"pendiente",notes:""},{id:"m1-16",q:"Q4",month:"Nov",text:"Piloto IA #4 (cap 120%): IA para optimización bundles y performance",type:"piloto",status:"pendiente",notes:""},{id:"m1-17",q:"Q4",month:"Dic",text:"Piloto IA #5 (cap 120%): Code review asistido por IA en pipeline CI/CD",type:"piloto",status:"pendiente",notes:""},{id:"m1-18",q:"Q4",month:"Dic",text:"Informe final: evidencia adopción ≥80%, pilotos producción, sesiones Guild",type:"entregable",status:"pendiente",notes:""}]},meta2:{title:"Liderazgo Guild Frontend y Transferencia",weight:"20%",color:"#10b981",items:[{id:"m2-01",q:"Q1",month:"Ene",text:"Planificar calendario anual Guild Frontend: 6 sesiones, tema, facilitador, artefacto",type:"entregable",status:"pendiente",notes:""},{id:"m2-02",q:"Q1",month:"Feb",text:"Guild Frontend #1: 'Patrones React — Hooks avanzados' — Artefacto: Guía Custom Hooks CIS",type:"guild",status:"pendiente",notes:""},{id:"m2-03",q:"Q1",month:"Mar",text:"Dojo #1: Live coding 1h — Compound Components y Render Props",type:"dojo",status:"pendiente",notes:""},{id:"m2-04",q:"Q2",month:"Abr",text:"Guild Frontend #2: 'Rendimiento React — useMemo, useCallback' — Artefacto: Checklist performance",type:"guild",status:"pendiente",notes:""},{id:"m2-05",q:"Q2",month:"May",text:"Coordinar con arquitectura: ¿cuál API del open core entrega Frontend?",type:"reunión",status:"pendiente",notes:""},{id:"m2-06",q:"Q2",month:"Jun",text:"Guild Frontend #3: 'Estado asíncrono — React Query, SWR' — Artefacto: ADR estado asíncrono",type:"guild",status:"pendiente",notes:""},{id:"m2-07",q:"Q2",month:"Jun",text:"Dojo #2: Live coding 1h — React Query en caso real de célula",type:"dojo",status:"pendiente",notes:""},{id:"m2-08",q:"Q3",month:"Jul",text:"Habilitar API #1 del open core",type:"entregable",status:"pendiente",notes:""},{id:"m2-09",q:"Q3",month:"Ago",text:"Guild Frontend #4: 'Monorepo, micro-frontends, Module Federation' — Artefacto: PoC + README",type:"guild",status:"pendiente",notes:""},{id:"m2-10",q:"Q3",month:"Sep",text:"Espacio aprendizaje #1: Taller 2h Juniors — 'Componente básico a reutilizable'",type:"dojo",status:"pendiente",notes:""},{id:"m2-11",q:"Q4",month:"Oct",text:"Guild Frontend #5: 'Testing avanzado — MSW, Testing Library' — Artefacto: Estándar testing",type:"guild",status:"pendiente",notes:""},{id:"m2-12",q:"Q4",month:"Nov",text:"Guild Frontend #6 (cap 120%): 'Accesibilidad y Design Systems' — Artefacto: Guía accesibilidad",type:"guild",status:"pendiente",notes:""},{id:"m2-13",q:"Q4",month:"Nov",text:"Habilitar API #2 del open core (cap 120%)",type:"entregable",status:"pendiente",notes:""},{id:"m2-14",q:"Q4",month:"Dic",text:"Espacio aprendizaje #2: Workshop — 'Code review efectivo'",type:"dojo",status:"pendiente",notes:""},{id:"m2-15",q:"Q4",month:"Dic",text:"Consolidar registro sesiones Guild en Confluence/Notion",type:"entregable",status:"pendiente",notes:""}]},meta3:{title:"Innovación e IA Aplicada al CIS",weight:"20%",color:"#f59e0b",items:[{id:"m3-01",q:"Q1",month:"Feb",text:"Radar Tecnológico Q1: ≥4 tecnologías evaluadas",type:"radar",status:"pendiente",notes:""},{id:"m3-02",q:"Q1",month:"Mar",text:"Iniciativa IA #1: Documentar propuesta validador código frontend",type:"iniciativa",status:"pendiente",notes:""},{id:"m3-03",q:"Q1",month:"Mar",text:"Priorizar iniciativas que reduzcan FTEs o mejoren velocidad",type:"reunión",status:"pendiente",notes:""},{id:"m3-04",q:"Q2",month:"Abr",text:"Implementar Iniciativa IA #1 en producción",type:"iniciativa",status:"pendiente",notes:""},{id:"m3-05",q:"Q2",month:"May",text:"Radar Tecnológico Q2: ≥4 tecnologías + resultados pilotos",type:"radar",status:"pendiente",notes:""},{id:"m3-06",q:"Q2",month:"Jun",text:"Medir impacto Iniciativa #1: horas, errores, velocidad",type:"medición",status:"pendiente",notes:""},{id:"m3-07",q:"Q2",month:"Jun",text:"Iniciativa IA #2: Documentar propuesta automatización documentación",type:"iniciativa",status:"pendiente",notes:""},{id:"m3-08",q:"Q3",month:"Ago",text:"Radar Tecnológico Q3: ≥4 tecnologías",type:"radar",status:"pendiente",notes:""},{id:"m3-09",q:"Q3",month:"Sep",text:"Implementar Iniciativa IA #2 en producción",type:"iniciativa",status:"pendiente",notes:""},{id:"m3-10",q:"Q3",month:"Sep",text:"Medir impacto Iniciativa #2",type:"medición",status:"pendiente",notes:""},{id:"m3-11",q:"Q4",month:"Nov",text:"Radar Tecnológico Q4: balance anual",type:"radar",status:"pendiente",notes:""},{id:"m3-12",q:"Q4",month:"Nov",text:"Iniciativa IA #3 (cap 120%): tercera automatización",type:"iniciativa",status:"pendiente",notes:""},{id:"m3-13",q:"Q4",month:"Dic",text:"Informe final innovación",type:"entregable",status:"pendiente",notes:""}]},meta4:{title:"Estándares de Calidad y Seguridad",weight:"20%",color:"#ef4444",items:[{id:"m4-01",q:"Q1",month:"Feb",text:"Guía #1: 'Arquitectura APIs Frontend' — REST/GraphQL, errores, tipado",type:"guía",status:"pendiente",notes:""},{id:"m4-02",q:"Q1",month:"Mar",text:"Configurar SonarQube + checklist OWASP como gate de merge",type:"entregable",status:"pendiente",notes:""},{id:"m4-03",q:"Q1",month:"Mar",text:"Sesión adopción con Seniors: validar Guía #1",type:"reunión",status:"pendiente",notes:""},{id:"m4-04",q:"Q1",month:"Mar",text:"Verificar: 0 vulnerabilidades críticas al cierre Q1",type:"medición",status:"pendiente",notes:""},{id:"m4-05",q:"Q2",month:"May",text:"Guía #2: 'Testing Seguro Frontend' — XSS, CSP, secure headers",type:"guía",status:"pendiente",notes:""},{id:"m4-06",q:"Q2",month:"May",text:"Checklist seguridad como gate de cierre en tu tren",type:"entregable",status:"pendiente",notes:""},{id:"m4-07",q:"Q2",month:"Jun",text:"Sesión adopción Seniors: Guía #2",type:"reunión",status:"pendiente",notes:""},{id:"m4-08",q:"Q2",month:"Jun",text:"Verificar: 0 vulnerabilidades críticas al cierre Q2",type:"medición",status:"pendiente",notes:""},{id:"m4-09",q:"Q3",month:"Ago",text:"Auditoría interna seguridad: revisión técnica 2h por tren",type:"entregable",status:"pendiente",notes:""},{id:"m4-10",q:"Q3",month:"Sep",text:"Verificar: 0 vulnerabilidades críticas al cierre Q3",type:"medición",status:"pendiente",notes:""},{id:"m4-11",q:"Q3",month:"Sep",text:"(Cap 120%) Automatizar escaneo seguridad pre-commit",type:"entregable",status:"pendiente",notes:""},{id:"m4-12",q:"Q4",month:"Oct",text:"Guía #3: 'Estándar Componentes Reutilizables CIS'",type:"guía",status:"pendiente",notes:""},{id:"m4-13",q:"Q4",month:"Dic",text:"Verificar: 0 vulnerabilidades críticas al cierre Q4",type:"medición",status:"pendiente",notes:""},{id:"m4-14",q:"Q4",month:"Dic",text:"Consolidar evidencia: guías, SonarQube, gate OWASP, auditoría",type:"entregable",status:"pendiente",notes:""}]},meta5:{title:"Desarrollo de Talento Senior y Junior",weight:"20%",color:"#8b5cf6",items:[{id:"m5-01",q:"Q1",month:"Feb",text:"Evaluación 1:1 semestral #1 con cada Senior (≥3)",type:"reunión",status:"pendiente",notes:""},{id:"m5-02",q:"Q1",month:"Feb",text:"Diseñar plan crecimiento con cada Senior",type:"entregable",status:"pendiente",notes:""},{id:"m5-03",q:"Q1",month:"Mar",text:"Identificar High Performers — ruta clara para cada uno",type:"entregable",status:"pendiente",notes:""},{id:"m5-04",q:"Q1",month:"Mar",text:"Coordinar preparación Juniors para Arenacoders (≥2, 3 meses anticipación)",type:"reunión",status:"pendiente",notes:""},{id:"m5-05",q:"Q2",month:"Abr",text:"Seguimiento mensual Juniors candidatos Arenacoders",type:"reunión",status:"pendiente",notes:""},{id:"m5-06",q:"Q2",month:"May",text:"Encuesta NPS interna #1",type:"medición",status:"pendiente",notes:""},{id:"m5-07",q:"Q2",month:"Jun",text:"Documentar evolución técnica semestral ≥3 Seniors",type:"entregable",status:"pendiente",notes:""},{id:"m5-08",q:"Q3",month:"Jul",text:"Ronda #1 Arenacoders: ≥1 Junior presenta",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-09",q:"Q3",month:"Jul",text:"Feedback 1:1 post-Arenacoders",type:"reunión",status:"pendiente",notes:""},{id:"m5-10",q:"Q3",month:"Ago",text:"Evaluación 1:1 semestral #2 con cada Senior",type:"reunión",status:"pendiente",notes:""},{id:"m5-11",q:"Q4",month:"Oct",text:"Ronda #2 Arenacoders: ≥1 Junior adicional",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-12",q:"Q4",month:"Oct",text:"Feedback 1:1 post-Arenacoders ronda 2",type:"reunión",status:"pendiente",notes:""},{id:"m5-13",q:"Q4",month:"Nov",text:"Encuesta NPS interna #2 — target ≥8/10",type:"medición",status:"pendiente",notes:""},{id:"m5-14",q:"Q4",month:"Nov",text:"(Cap 110%) Preparar 3° Junior Arenacoders",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-15",q:"Q4",month:"Dic",text:"Consolidar: Arenacoders, NPS, evaluaciones, High Performers",type:"entregable",status:"pendiente",notes:""}]},formacion:{title:"Formación Personal del Mentor",weight:"Transversal",color:"#64748b",items:[{id:"f-01",q:"Q1",month:"Feb-Abr",text:"Foco 1 — Arquitecto Frontend Moderno: documentar React, patrones, monorepo",type:"formación",status:"pendiente",notes:""},{id:"f-02",q:"Q2",month:"May-Jul",text:"Foco 2 — Herramienta validadora de código con IA",type:"formación",status:"pendiente",notes:""},{id:"f-03",q:"Q3",month:"Ago-Nov",text:"Foco 3 — Visión Fullstack: backend Java/Spring Boot",type:"formación",status:"pendiente",notes:""},{id:"f-04",q:"Q2",month:"Jun-Dic",text:"Certificación Meta Front-End Developer Professional — 6h/semana",type:"certificación",status:"pendiente",notes:""},{id:"f-05",q:"Q3",month:"Ago-Feb27",text:"Certificación Google UX Design Professional — 7h/semana",type:"certificación",status:"pendiente",notes:""},{id:"f-06",q:"Q1",month:"Todo el año",text:"Liderazgo empático y comunicación efectiva",type:"formación",status:"pendiente",notes:""}]}};
 
-let data=null,view="timeline",fMeta="all",fQ="all",fSt="all";
-let lastSaved="",currentUser=null,saveTimeout=null,unsubFirestore=null,isAdmin=false;
-let dragItem=null;
+let data=null,mentees=[],view="timeline",fMeta="all",fQ="all",fSt="all";
+let lastSaved="",currentUser=null,saveTimeout=null,saveMTimeout=null,unsubFirestore=null,unsubMentees=null,isAdmin=false,dragItem=null;
+let currentView="plan"; // "plan" or "mentees" or "mentee-detail"
+let selectedMenteeId=null;
 
 function getDocRef(){return db.collection("mentor-plan").doc(ADMIN_DOC)}
+function getMenteesRef(){return db.collection("mentor-plan").doc(MENTEES_DOC)}
 
 async function loadFromFirestore(){
-  const ref=getDocRef();
   try{
-    const doc=await ref.get();
-    if(doc.exists){
-      data=doc.data().plan;
-      // Ensure notes field exists on all items
-      Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes="";}));
-    }else if(isAdmin){
-      data=JSON.parse(JSON.stringify(INIT));
-      await ref.set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    }else{data=JSON.parse(JSON.stringify(INIT));}
-  }catch(x){console.error("Load:",x);data=JSON.parse(JSON.stringify(INIT));}
+    const doc=await getDocRef().get();
+    if(doc.exists){data=doc.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));}
+    else if(isAdmin){data=JSON.parse(JSON.stringify(INIT));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});}
+    else{data=JSON.parse(JSON.stringify(INIT))}
+  }catch(x){console.error("Load:",x);data=JSON.parse(JSON.stringify(INIT))}
+  try{
+    const mdoc=await getMenteesRef().get();
+    if(mdoc.exists){mentees=mdoc.data().list||[]}
+    else if(isAdmin){mentees=[];await getMenteesRef().set({list:[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+    else{mentees=[]}
+  }catch(x){mentees=[]}
 }
 
 function listenToFirestore(){
-  const ref=getDocRef();
   if(unsubFirestore)unsubFirestore();
-  unsubFirestore=ref.onSnapshot(doc=>{
-    if(doc.exists&&!doc.metadata.hasPendingWrites){
-      data=doc.data().plan;
-      Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes="";}));
-      render();
-      showToast(isAdmin?"📥 Sincronizado":"📥 Plan actualizado");
-    }
+  unsubFirestore=getDocRef().onSnapshot(doc=>{
+    if(doc.exists&&!doc.metadata.hasPendingWrites){data=doc.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));renderCurrentView();showToast("📥 Sincronizado")}
+  });
+  if(unsubMentees)unsubMentees();
+  unsubMentees=getMenteesRef().onSnapshot(doc=>{
+    if(doc.exists&&!doc.metadata.hasPendingWrites){mentees=doc.data().list||[];renderCurrentView()}
   });
 }
 
 function saveToFirestore(){
-  if(!isAdmin)return;
-  if(saveTimeout)clearTimeout(saveTimeout);
+  if(!isAdmin)return;if(saveTimeout)clearTimeout(saveTimeout);
   saveTimeout=setTimeout(async()=>{
-    try{
-      await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      lastSaved=new Date().toLocaleTimeString();
-      const el=document.getElementById("save-ind");if(el)el.textContent="Guardado: "+lastSaved;
-      showToast("✅ Guardado");
-    }catch(x){console.error("Save:",x);showToast("⚠️ Error al guardar");}
+    try{await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});lastSaved=new Date().toLocaleTimeString();const el=document.getElementById("save-ind");if(el)el.textContent="Guardado: "+lastSaved;showToast("✅ Guardado")}catch(x){showToast("⚠️ Error")}
   },800);
+}
+
+function saveMentees(){
+  if(!isAdmin)return;if(saveMTimeout)clearTimeout(saveMTimeout);
+  saveMTimeout=setTimeout(async()=>{
+    try{await getMenteesRef().set({list:mentees,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("✅ Mentees guardados")}catch(x){showToast("⚠️ Error")}
+  },600);
 }
 
 function showToast(msg){const t=document.getElementById("sync-toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
 
 auth.onAuthStateChanged(async user=>{
   currentUser=user;
-  if(user){isAdmin=user.email===ADMIN_EMAIL;await loadFromFirestore();listenToFirestore();render();}
-  else{data=null;isAdmin=false;if(unsubFirestore){unsubFirestore();unsubFirestore=null;}renderLogin();}
+  if(user){isAdmin=user.email===ADMIN_EMAIL;await loadFromFirestore();listenToFirestore();renderCurrentView()}
+  else{data=null;isAdmin=false;mentees=[];if(unsubFirestore){unsubFirestore();unsubFirestore=null}if(unsubMentees){unsubMentees();unsubMentees=null}renderLogin()}
 });
-function signIn(){auth.signInWithPopup(provider).catch(x=>{alert("Error: "+x.message)})}
+function signIn(){auth.signInWithPopup(provider).catch(x=>alert("Error: "+x.message))}
 function signOut(){auth.signOut()}
 
 function findItem(mk,id){return data[mk].items.find(i=>i.id===id)}
-
-function setStatus(mk,id,st){
-  if(!isAdmin){showToast("🔒 Solo lectura");return}
-  const item=findItem(mk,id);if(item){item.status=st;saveToFirestore();render();}
-}
-
-function setNotes(mk,id,notes){
-  if(!isAdmin)return;
-  const item=findItem(mk,id);if(item){item.notes=notes;saveToFirestore();}
-}
-
-function setTitle(mk,id,text){
-  if(!isAdmin)return;
-  const item=findItem(mk,id);if(item){item.text=text;saveToFirestore();render();}
-}
-
+function setStatus(mk,id,st){if(!isAdmin){showToast("🔒 Solo lectura");return}const item=findItem(mk,id);if(item){item.status=st;saveToFirestore();renderCurrentView()}}
+function setNotes(mk,id,notes){if(!isAdmin)return;const item=findItem(mk,id);if(item){item.notes=notes;saveToFirestore()}}
+function setTitle(mk,id,text){if(!isAdmin)return;const item=findItem(mk,id);if(item){item.text=text;saveToFirestore();renderCurrentView()}}
 function matchQ(iq,fq){if(fq==="all")return true;if(iq===fq||iq==="ALL")return true;if(iq.includes("-"))return iq.split("-").some(q=>q===fq);return false}
 function getAllItems(){return Object.entries(data).flatMap(([k,v])=>v.items.map(i=>({...i,mk:k,mt:v.title,mc:v.color,mw:v.weight})))}
 
-// DOM helper
-function h(tag,attrs,...ch){
-  const el=document.createElement(tag);
-  if(attrs)Object.entries(attrs).forEach(([k,v])=>{
-    if(k==="style"&&typeof v==="object")Object.assign(el.style,v);
-    else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);
-    else if(k==="class")el.className=v;
-    else el.setAttribute(k,v);
-  });
-  ch.flat().forEach(c=>{if(c!=null)el.append(typeof c==="string"?document.createTextNode(c):c)});
-  return el;
+function h(tag,attrs,...ch){const el=document.createElement(tag);if(attrs)Object.entries(attrs).forEach(([k,v])=>{if(k==="style"&&typeof v==="object")Object.assign(el.style,v);else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==="class")el.className=v;else el.setAttribute(k,v)});ch.flat().forEach(c=>{if(c!=null)el.append(typeof c==="string"?document.createTextNode(c):c)});return el}
+
+function renderCurrentView(){
+  if(!data||!currentUser)return;
+  if(currentView==="mentees")renderMenteesView();
+  else if(currentView==="mentee-detail")renderMenteeDetail();
+  else render();
 }
 
-// ============ MODAL ============
+// ============ TASK MODAL ============
 function openModal(mk,id){
-  const item=findItem(mk,id);if(!item)return;
-  const meta=data[mk];
+  const item=findItem(mk,id);if(!item)return;const meta=data[mk];
   const root=document.getElementById("modal-root");root.innerHTML="";
-
   const overlay=h("div",{class:"modal-overlay",onClick:ev=>{if(ev.target===overlay)closeModal()}});
   const modal=h("div",{class:"modal"});
-
-  // Header
   const header=h("div",{class:"modal-header"});
   const colorBar=h("div",{class:"modal-color-bar",style:{background:meta.color}});
   const titleArea=h("div",{class:"modal-title-area"});
-  let editingTitle=false;
 
   function renderTitleView(){
     titleArea.innerHTML="";
     const row=h("div",{class:"modal-title"});
-    const emoji=h("span",null,(TE[item.type]||"📌")+" ");
-    const txt=h("span",{class:"modal-title-text"},item.text);
-    row.append(emoji,txt);
-    if(isAdmin){
-      const btn=h("button",{class:"btn-edit-title",title:"Editar título",onClick:ev=>{ev.stopPropagation();renderTitleEdit()}});
-      btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-      row.append(btn);
-    }
+    row.append(h("span",null,(TE[item.type]||"📌")+" "),h("span",{class:"modal-title-text"},item.text));
+    if(isAdmin){const btn=h("button",{class:"btn-edit-title",title:"Editar título",onClick:ev=>{ev.stopPropagation();renderTitleEdit()}});btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';row.append(btn)}
     titleArea.append(row);
   }
-
   function renderTitleEdit(){
     titleArea.innerHTML="";
     const input=h("input",{class:"modal-title-input",value:item.text});
-    input.addEventListener("keydown",ev=>{
-      if(ev.key==="Enter"){setTitle(mk,id,input.value);renderTitleView()}
-      if(ev.key==="Escape")renderTitleView();
-    });
-    const saveBtn=h("button",{class:"btn-save",style:{marginTop:"8px",fontSize:"12px",padding:"5px 14px"},onClick:()=>{setTitle(mk,id,input.value);renderTitleView()}});
-    saveBtn.textContent="Guardar título";
-    titleArea.append(input,saveBtn);
-    setTimeout(()=>input.focus(),50);
+    input.addEventListener("keydown",ev=>{if(ev.key==="Enter"){setTitle(mk,id,input.value);renderTitleView()}if(ev.key==="Escape")renderTitleView()});
+    const row=h("div",{style:{display:"flex",gap:"6px",marginTop:"8px"}});
+    row.append(h("button",{class:"btn-add-mentee",style:{fontSize:"12px",padding:"5px 14px"},onClick:()=>{setTitle(mk,id,input.value);renderTitleView()}},"Guardar"),h("button",{class:"mentee-edit-cancel",onClick:renderTitleView},"Cancelar"));
+    titleArea.append(input,row);setTimeout(()=>input.focus(),50);
   }
-
   renderTitleView();
-
-  const closeBtn=h("button",{class:"modal-close",onClick:closeModal},"×");
-  header.append(colorBar,titleArea,closeBtn);
+  header.append(colorBar,titleArea,h("button",{class:"modal-close",onClick:closeModal},"×"));
   modal.append(header);
 
-  // Body
   const body=h("div",{class:"modal-body"});
-
-  // Tags
   const tags=h("div",{class:"modal-tags"});
-  tags.append(
-    h("span",{class:"modal-tag",style:{background:meta.color+"20",color:meta.color}},meta.title),
-    h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},meta.weight),
-    h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},(TE[item.type]||"")+" "+item.type),
-    h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},item.q+(QLabels[item.q]?" · "+QLabels[item.q]:"")),
-    h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},"📅 "+item.month),
-    h("span",{class:"modal-tag",style:{background:SC[item.status]+"25",color:SC[item.status]}},SL[item.status])
-  );
+  tags.append(h("span",{class:"modal-tag",style:{background:meta.color+"20",color:meta.color}},meta.title),h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},meta.weight),h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},(TE[item.type]||"")+" "+item.type),h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},item.q+(QL[item.q]?" · "+QL[item.q]:"")),h("span",{class:"modal-tag",style:{background:"#f1f5f9",color:"#475569"}},"📅 "+item.month),h("span",{class:"modal-tag status-tag-live",style:{background:SC[item.status]+"25",color:SC[item.status]}},SL[item.status]));
   body.append(tags);
 
-  // Status
-  const statusSection=h("div",{class:"modal-section"});
-  statusSection.append(h("div",{class:"modal-section-label"},"Estado"));
-  if(isAdmin){
-    const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(mk,id,ev.target.value);
-      // Update tag
-      const stag=modal.querySelector(".status-tag-live");
-      if(stag){stag.textContent=SL[ev.target.value];stag.style.background=SC[ev.target.value]+"25";stag.style.color=SC[ev.target.value]}
-    }});
-    STATUSES.forEach(s=>{const o=h("option",{value:s},SL[s]);if(s===item.status)o.selected=true;sel.append(o)});
-    statusSection.append(sel);
-  }else{
-    statusSection.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:SC[item.status]+"15",color:SC[item.status],fontWeight:"600",fontSize:"14px"}},SL[item.status]));
-  }
-  body.append(statusSection);
+  const stSec=h("div",{class:"modal-section"});stSec.append(h("div",{class:"modal-section-label"},"Estado"));
+  if(isAdmin){const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(mk,id,ev.target.value);const st=modal.querySelector(".status-tag-live");if(st){st.textContent=SL[ev.target.value];st.style.background=SC[ev.target.value]+"25";st.style.color=SC[ev.target.value]}}});STATUSES.forEach(s=>{const o=h("option",{value:s},SL[s]);if(s===item.status)o.selected=true;sel.append(o)});stSec.append(sel)}
+  else{stSec.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:SC[item.status]+"15",color:SC[item.status],fontWeight:"600",fontSize:"14px"}},SL[item.status]))}
+  body.append(stSec);
 
-  // Notes
-  const notesSection=h("div",{class:"modal-section"});
-  notesSection.append(h("div",{class:"modal-section-label"},"Notas"));
+  const nSec=h("div",{class:"modal-section"});nSec.append(h("div",{class:"modal-section-label"},"Notas"));
+  if(isAdmin){const ta=h("textarea",{class:"modal-notes",placeholder:"Agrega notas, enlaces, ideas, seguimiento..."});ta.value=item.notes||"";let nt;ta.addEventListener("input",()=>{clearTimeout(nt);nt=setTimeout(()=>setNotes(mk,id,ta.value),600)});nSec.append(ta)}
+  else{nSec.append(item.notes?h("div",{class:"modal-notes-readonly"},item.notes):h("div",{style:{color:"#94a3b8",fontSize:"13px",fontStyle:"italic"}},"Sin notas aún."))}
+  body.append(nSec);modal.append(body);overlay.append(modal);root.append(overlay);document.body.style.overflow="hidden";
+}
+
+function closeModal(){document.getElementById("modal-root").innerHTML="";document.body.style.overflow="";renderCurrentView()}
+
+// ============ MENTEES ============
+function addMentee(name,role){
+  if(!isAdmin||!name.trim())return;
+  mentees.push({id:"mt-"+Date.now(),name:name.trim(),role:role,nextMeeting:"",notes:""});
+  saveMentees();renderCurrentView();
+}
+function deleteMentee(id){
+  if(!isAdmin)return;if(!confirm("¿Eliminar este mentee?"))return;
+  mentees=mentees.filter(m=>m.id!==id);saveMentees();renderCurrentView();
+}
+function updateMentee(id,field,value){
+  if(!isAdmin)return;const m=mentees.find(x=>x.id===id);if(m){m[field]=value;saveMentees()}
+}
+
+function renderMenteesView(){
+  const app=document.getElementById("app");app.innerHTML="";
+  const C=h("div",{class:"app-container"});
+  C.append(renderUserBar());
+
+  // Back button
+  C.append(h("button",{class:"back-btn",onClick:()=>{currentView="plan";renderCurrentView()}},"← Volver al Plan"));
+
+  const panel=h("div",{class:"mentees-panel"});
+  panel.append(h("h2",{style:{fontSize:"20px",fontWeight:"700",marginBottom:"4px"}},"👥 Mis Mentees"),h("p",{style:{color:"#64748b",fontSize:"14px",marginBottom:"20px"}},"Gestiona tu equipo de Juniors y Seniors a cargo."));
+
+  // Add form (admin only)
   if(isAdmin){
-    const textarea=h("textarea",{class:"modal-notes",placeholder:"Agrega notas, enlaces, ideas, seguimiento..."});
-    textarea.value=item.notes||"";
-    let noteTimeout;
-    textarea.addEventListener("input",()=>{
-      clearTimeout(noteTimeout);
-      noteTimeout=setTimeout(()=>setNotes(mk,id,textarea.value),600);
-    });
-    notesSection.append(textarea);
-  }else{
-    if(item.notes){
-      notesSection.append(h("div",{class:"modal-notes-readonly"},item.notes));
+    const addRow=h("div",{class:"mentee-add-row"});
+    const nameInput=h("input",{class:"mentee-input",placeholder:"Nombre completo del mentee"});
+    const roleSelect=h("select",{class:"mentee-select"});
+    roleSelect.append(h("option",{value:"junior"},"Junior"),h("option",{value:"senior"},"Senior"));
+    const addBtn=h("button",{class:"btn-add-mentee",onClick:()=>{addMentee(nameInput.value,roleSelect.value);nameInput.value=""}});
+    addBtn.textContent="+ Agregar";
+    nameInput.addEventListener("keydown",ev=>{if(ev.key==="Enter"){addMentee(nameInput.value,roleSelect.value);nameInput.value=""}});
+    addRow.append(nameInput,roleSelect,addBtn);
+    panel.append(addRow);
+  }
+
+  // Mentee list
+  if(!mentees.length){panel.append(h("div",{style:{padding:"30px",textAlign:"center",color:"#94a3b8",fontSize:"14px"}},"No hay mentees agregados aún."))}
+  let editingId=null;
+
+  mentees.forEach(m=>{
+    const row=h("div",{class:"mentee-row",id:"mentee-row-"+m.id});
+    const nameEl=h("span",{class:"mentee-name"},m.name);
+    const badge=h("span",{class:"mentee-badge "+(m.role==="junior"?"junior":"senior")},m.role);
+    row.append(nameEl,badge);
+
+    if(isAdmin){
+      const actions=h("div",{class:"mentee-actions"});
+      // Edit
+      actions.append(h("button",{class:"mentee-btn",onClick:ev=>{
+        ev.stopPropagation();
+        const rowEl=document.getElementById("mentee-row-"+m.id);if(!rowEl)return;
+        rowEl.innerHTML="";
+        const editRow=h("div",{class:"mentee-edit-row"});
+        const ni=h("input",{class:"mentee-edit-input",value:m.name});
+        const rs=h("select",{class:"mentee-edit-select"});
+        rs.append(h("option",{value:"junior"},"Junior"),h("option",{value:"senior"},"Senior"));
+        rs.value=m.role;
+        editRow.append(ni,rs,h("button",{class:"mentee-edit-save",onClick:()=>{updateMentee(m.id,"name",ni.value);updateMentee(m.id,"role",rs.value);renderCurrentView()}},"✓"),h("button",{class:"mentee-edit-cancel",onClick:renderCurrentView},"✕"));
+        rowEl.append(editRow);ni.focus();
+      }},"✏️ Editar"));
+      // Delete
+      actions.append(h("button",{class:"mentee-btn danger",onClick:ev=>{ev.stopPropagation();deleteMentee(m.id)}},"🗑️ Eliminar"));
+      // Open
+      actions.append(h("button",{class:"mentee-btn",style:{background:"#1e3a5f",color:"#fff",border:"none"},onClick:ev=>{ev.stopPropagation();selectedMenteeId=m.id;currentView="mentee-detail";renderCurrentView()}},"📂 Abrir"));
+      row.append(actions);
     }else{
-      notesSection.append(h("div",{style:{color:"#94a3b8",fontSize:"13px",fontStyle:"italic"}},"Sin notas aún."));
+      // Viewers can open read-only
+      row.style.cursor="pointer";
+      row.addEventListener("click",()=>{selectedMenteeId=m.id;currentView="mentee-detail";renderCurrentView()});
+    }
+    panel.append(row);
+  });
+
+  C.append(panel);app.append(C);
+}
+
+function renderMenteeDetail(){
+  const m=mentees.find(x=>x.id===selectedMenteeId);
+  if(!m){currentView="mentees";renderCurrentView();return}
+  const app=document.getElementById("app");app.innerHTML="";
+  const C=h("div",{class:"app-container"});
+  C.append(renderUserBar());
+  C.append(h("button",{class:"back-btn",onClick:()=>{currentView="mentees";renderCurrentView()}},"← Volver a Mentees"));
+
+  const panel=h("div",{class:"mentees-panel"});
+  const headerRow=h("div",{style:{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}});
+  headerRow.append(h("div",{style:{width:"48px",height:"48px",borderRadius:"50%",background:m.role==="junior"?"#dbeafe":"#fef3c7",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"20px"}},m.role==="junior"?"👨‍💻":"👨‍🏫"));
+  const nameCol=h("div");
+  nameCol.append(h("div",{class:"mentee-modal-name"},m.name),h("span",{class:"mentee-badge "+(m.role==="junior"?"junior":"senior")},m.role));
+  headerRow.append(nameCol);
+  panel.append(headerRow);
+
+  // Next meeting
+  const meetSec=h("div",{class:"modal-section"});
+  meetSec.append(h("div",{class:"modal-section-label"},"Próximo seguimiento"));
+  const meetBox=h("div",{class:"mentee-meeting"});
+  if(isAdmin){
+    const dateInput=h("input",{type:"datetime-local",class:"mentee-date-input",value:m.nextMeeting||""});
+    dateInput.addEventListener("change",()=>{updateMentee(m.id,"nextMeeting",dateInput.value)});
+    meetBox.append(dateInput);
+    if(m.nextMeeting){
+      const d=new Date(m.nextMeeting);
+      const formatted=d.toLocaleDateString("es-CO",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+" a las "+d.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+      meetBox.append(h("div",{style:{marginTop:"8px",fontSize:"14px",color:"#1e3a5f",fontWeight:"600"}},"Próximo seguimiento: "+formatted));
+    }
+    if(isAdmin&&m.nextMeeting){
+      meetBox.append(h("button",{class:"mentee-btn",style:{marginTop:"8px"},onClick:()=>{updateMentee(m.id,"nextMeeting","");renderCurrentView()}},"Limpiar fecha"));
+    }
+  }else{
+    if(m.nextMeeting){
+      const d=new Date(m.nextMeeting);
+      const formatted=d.toLocaleDateString("es-CO",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+" a las "+d.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+      meetBox.append(h("div",{class:"mentee-meeting-label"},"Próximo seguimiento:"),h("div",{class:"mentee-meeting-date"},formatted));
+    }else{
+      meetBox.append(h("div",{class:"mentee-meeting-none"},"Sin reunión agendada aún"));
     }
   }
-  body.append(notesSection);
+  meetSec.append(meetBox);panel.append(meetSec);
 
-  modal.append(body);
-
-  // Mark the live status tag
-  const allTags=tags.querySelectorAll(".modal-tag");
-  const lastTag=allTags[allTags.length-1];
-  if(lastTag)lastTag.classList.add("status-tag-live");
-
-  overlay.append(modal);
-  root.append(overlay);
-  document.body.style.overflow="hidden";
+  // Notes
+  const notesSec=h("div",{class:"modal-section"});
+  notesSec.append(h("div",{class:"modal-section-label"},"Notas de seguimiento"));
+  if(isAdmin){
+    const ta=h("textarea",{class:"mentee-notes-full",placeholder:"Escribe aquí las notas de seguimiento, acuerdos, temas tratados en 1:1, compromisos, retroalimentación..."});
+    ta.value=m.notes||"";
+    let nt;ta.addEventListener("input",()=>{clearTimeout(nt);nt=setTimeout(()=>{updateMentee(m.id,"notes",ta.value)},600)});
+    notesSec.append(ta);
+  }else{
+    notesSec.append(m.notes?h("div",{class:"modal-notes-readonly"},m.notes):h("div",{style:{color:"#94a3b8",fontSize:"13px",fontStyle:"italic"}},"Sin notas de seguimiento aún."));
+  }
+  panel.append(notesSec);C.append(panel);app.append(C);
 }
 
-function closeModal(){
-  document.getElementById("modal-root").innerHTML="";
-  document.body.style.overflow="";
-  render();
+// ============ SHARED COMPONENTS ============
+function renderUserBar(){
+  const ub=h("div",{class:"user-bar"});
+  const ui=h("div",{class:"user-info"});
+  if(currentUser.photoURL)ui.append(h("img",{class:"user-avatar",src:currentUser.photoURL,referrerpolicy:"no-referrer"}));
+  ui.append(document.createTextNode(currentUser.displayName||currentUser.email));
+  ub.append(ui,h("span",{class:isAdmin?"badge-admin":"badge-readonly"},isAdmin?"Admin":"Solo lectura"),h("button",{class:"btn-logout",onClick:signOut},"Cerrar sesión"));
+  return ub;
 }
 
-// ============ RENDER ============
+// ============ LOGIN ============
 function renderLogin(){
   const app=document.getElementById("app");app.innerHTML="";
   const screen=h("div",{class:"login-screen"});
@@ -455,10 +450,11 @@ function renderLogin(){
   svg.setAttribute("viewBox","0 0 24 24");svg.setAttribute("width","20");svg.setAttribute("height","20");
   svg.innerHTML='<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>';
   btn.append(svg,document.createTextNode("Iniciar con Google"));
-  card.append(h("div",{class:"emoji"},"🎯"),h("h1",null,"Plan Mentor Frontend 2026"),h("p",null,"Juan Camilo Naranjo Marín · CIS Protección"),h("p",{style:{color:"#94a3b8",fontSize:"13px",marginBottom:"24px"}},"Inicia sesión para ver el plan. Solo el mentor puede modificarlo."),btn);
+  card.append(h("div",{class:"emoji"},"🎯"),h("h1",null,"Plan Mentor Frontend 2026"),h("p",null,"Juan Camilo Naranjo Marín · CIS Protección"),h("p",{style:{color:"#94a3b8",fontSize:"13px",marginBottom:"24px"}},"Inicia sesión para ver el plan."),btn);
   screen.append(card);app.append(screen);
 }
 
+// ============ MAIN ITEM RENDER ============
 function renderItem(item,compact){
   const row=h("div",{class:"item",style:{borderLeft:`4px solid ${item.mc}`},onClick:()=>openModal(item.mk,item.id)});
   const chk=h("div",{class:"chk",style:{borderColor:SC[item.status],background:item.status==="completado"?"#10b981":item.status==="en progreso"?"#fef3c7":"#fff"}});
@@ -466,7 +462,7 @@ function renderItem(item,compact){
   const bd=h("div",{class:"item-body"});
   const txt=h("div",{class:"item-text",style:{textDecoration:item.status==="completado"?"line-through":"none",color:item.status==="completado"?"#94a3b8":"#1e293b"}});
   txt.textContent=(TE[item.type]||"📌")+" "+item.text;
-  if(item.notes){const dot=h("span",{class:"note-dot",title:"Tiene notas"});txt.append(dot)}
+  if(item.notes)txt.append(h("span",{class:"note-dot",title:"Tiene notas"}));
   const meta=h("div",{class:"item-meta"});
   if(!compact){const tag=h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc,marginRight:"6px"}});tag.textContent=item.mt.substring(0,30);meta.append(tag)}
   meta.append(document.createTextNode(item.month+" "));
@@ -474,35 +470,31 @@ function renderItem(item,compact){
   bd.append(txt,meta);row.append(chk,bd);return row;
 }
 
+// ============ MAIN PLAN RENDER ============
 function render(){
   if(!data||!currentUser)return;
   const app=document.getElementById("app");app.innerHTML="";
   const C=h("div",{class:"app-container"});
-
-  // User bar
-  const ub=h("div",{class:"user-bar"});
-  const ui=h("div",{class:"user-info"});
-  if(currentUser.photoURL)ui.append(h("img",{class:"user-avatar",src:currentUser.photoURL,referrerpolicy:"no-referrer"}));
-  ui.append(document.createTextNode(currentUser.displayName||currentUser.email));
-  ub.append(ui);
-  ub.append(h("span",{class:isAdmin?"badge-admin":"badge-readonly"},isAdmin?"Admin":"Solo lectura"));
-  ub.append(h("button",{class:"btn-logout",onClick:signOut},"Cerrar sesión"));
-  C.append(ub);
+  C.append(renderUserBar());
 
   const all=getAllItems();
   const stats={t:all.length,c:all.filter(i=>i.status==="completado").length,p:all.filter(i=>i.status==="en progreso").length,pe:all.filter(i=>i.status==="pendiente").length};
   const pct=stats.t?Math.round(stats.c/stats.t*100):0;
 
-  // Header
+  // Header with Mentees button
   const hdr=h("div",{class:"header"});
   const hTop=h("div",{class:"header-top"});
-  hTop.append(h("div",null,h("h1",null,"Plan Mentor Frontend 2026"),h("p",null,"Juan Camilo Naranjo Marín · CIS Protección · Líder Guild Frontend")));
-  if(isAdmin)hTop.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{id:"save-dot",class:"save-dot",style:{background:"#10b981"}})));
-  hdr.append(hTop);
+  const hLeft=h("div");
+  hLeft.append(h("h1",null,"Plan Mentor Frontend 2026"),h("p",null,"Juan Camilo Naranjo Marín · CIS Protección · Líder Guild Frontend"));
+  const hRight=h("div",{style:{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"8px"}});
+  const menteesBtn=h("button",{class:"btn-mentees",onClick:()=>{currentView="mentees";renderCurrentView()}});
+  menteesBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Mentees'+(mentees.length?" ("+mentees.length+")":"");
+  hRight.append(menteesBtn);
+  if(isAdmin)hRight.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{class:"save-dot",style:{background:"#10b981"}})));
+  hTop.append(hLeft,hRight);hdr.append(hTop);
+
   const sr=h("div",{class:"stats-row"});
-  [[pct+"%","Progreso total","#fff"],[stats.c,"Completados","#10b981"],[stats.p,"En progreso","#f59e0b"],[stats.pe,"Pendientes","#94a3b8"]].forEach(([n,l,c])=>{
-    sr.append(h("div",{class:"stat-box"},h("div",{class:"stat-num",style:{color:c}},String(n)),h("div",{class:"stat-label"},l)));
-  });
+  [[pct+"%","Progreso total","#fff"],[stats.c,"Completados","#10b981"],[stats.p,"En progreso","#f59e0b"],[stats.pe,"Pendientes","#94a3b8"]].forEach(([n,l,c])=>{sr.append(h("div",{class:"stat-box"},h("div",{class:"stat-num",style:{color:c}},String(n)),h("div",{class:"stat-label"},l)))});
   hdr.append(sr);
   const pbg=h("div",{class:"progress-bg"});pbg.append(h("div",{class:"progress-fill",style:{width:pct+"%"}}));hdr.append(pbg);
   C.append(hdr);
@@ -520,69 +512,37 @@ function render(){
 
   // Controls
   const ctrl=h("div",{class:"controls"});
-  [["timeline","Cronológico"],["kanban","Kanban"],["checklist","Checklist"]].forEach(([v,l])=>{
-    ctrl.append(h("button",{class:"tab"+(view===v?" on":""),onClick:()=>{view=v;render()}},l));
-  });
+  [["timeline","Cronológico"],["kanban","Kanban"],["checklist","Checklist"]].forEach(([v,l])=>{ctrl.append(h("button",{class:"tab"+(view===v?" on":""),onClick:()=>{view=v;render()}},l))});
   ctrl.append(h("span",{class:"sep"}));
   const selQ=h("select",{onChange:ev=>{fQ=ev.target.value;render()}});
-  [["all","Todos los Q"],["Q1","Q1"],["Q2","Q2"],["Q3","Q3"],["Q4","Q4"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fQ)o.selected=true;selQ.append(o)});
-  ctrl.append(selQ);
+  [["all","Todos los Q"],["Q1","Q1"],["Q2","Q2"],["Q3","Q3"],["Q4","Q4"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fQ)o.selected=true;selQ.append(o)});ctrl.append(selQ);
   const selS=h("select",{onChange:ev=>{fSt=ev.target.value;render()}});
-  [["all","Todos"],["pendiente","Pendiente"],["en progreso","En progreso"],["completado","Completado"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fSt)o.selected=true;selS.append(o)});
-  ctrl.append(selS);
+  [["all","Todos"],["pendiente","Pendiente"],["en progreso","En progreso"],["completado","Completado"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fSt)o.selected=true;selS.append(o)});ctrl.append(selS);
   if(fMeta!=="all"||fQ!=="all"||fSt!=="all")ctrl.append(h("button",{class:"btn-clear",onClick:()=>{fMeta="all";fQ="all";fSt="all";render()}},"Limpiar filtros"));
   if(isAdmin)ctrl.append(h("button",{class:"btn-reset",onClick:()=>{if(confirm("¿Reiniciar todo?")){data=JSON.parse(JSON.stringify(INIT));saveToFirestore();render()}}},"Reiniciar todo"));
   C.append(ctrl);
 
   const filtered=getAllItems().filter(i=>(fMeta==="all"||i.mk===fMeta)&&matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
 
-  // TIMELINE
-  if(view==="timeline"){
-    ["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{
-      const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));
-      if(!qI.length)return;
-      const sec=h("div",{style:{marginBottom:"20px"}});
-      sec.append(h("h3",{class:"q-head"},q+" · "+QLabels[q]));
-      qI.forEach(i=>sec.append(renderItem(i,false)));
-      C.append(sec);
-    });
-  }
+  // Timeline
+  if(view==="timeline"){["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));if(!qI.length)return;const sec=h("div",{style:{marginBottom:"20px"}});sec.append(h("h3",{class:"q-head"},q+" · "+QL[q]));qI.forEach(i=>sec.append(renderItem(i,false)));C.append(sec)})}
 
-  // KANBAN with drag & drop
+  // Kanban
   if(view==="kanban"){
     const kg=h("div",{class:"kanban"});
     STATUSES.forEach(st=>{
       const col=h("div",{class:"kcol","data-status":st});
-      // Drag events on column
       col.addEventListener("dragover",ev=>{ev.preventDefault();col.classList.add("drag-over")});
       col.addEventListener("dragleave",()=>col.classList.remove("drag-over"));
-      col.addEventListener("drop",ev=>{
-        ev.preventDefault();col.classList.remove("drag-over");
-        if(!isAdmin||!dragItem)return;
-        setStatus(dragItem.mk,dragItem.id,st);
-        dragItem=null;
-      });
-
-      const hd=h("div",{class:"kcol-head"});
-      const cnt=filtered.filter(i=>i.status===st);
-      hd.append(h("div",{class:"kdot",style:{background:SC[st]}}),h("span",{style:{fontWeight:"700",fontSize:"14px"}},SL[st]),h("span",{style:{fontSize:"12px",color:"#94a3b8",marginLeft:"auto"}},String(cnt.length)));
-      col.append(hd);
-
+      col.addEventListener("drop",ev=>{ev.preventDefault();col.classList.remove("drag-over");if(!isAdmin||!dragItem)return;setStatus(dragItem.mk,dragItem.id,st);dragItem=null});
+      const hd=h("div",{class:"kcol-head"});const cnt=filtered.filter(i=>i.status===st);
+      hd.append(h("div",{class:"kdot",style:{background:SC[st]}}),h("span",{style:{fontWeight:"700",fontSize:"14px"}},SL[st]),h("span",{style:{fontSize:"12px",color:"#94a3b8",marginLeft:"auto"}},String(cnt.length)));col.append(hd);
       cnt.forEach(item=>{
         const card=h("div",{class:"kcard",style:{borderLeft:`3px solid ${item.mc}`},draggable:isAdmin?"true":"false",onClick:()=>openModal(item.mk,item.id)});
-        if(isAdmin){
-          card.addEventListener("dragstart",ev=>{
-            dragItem={mk:item.mk,id:item.id};
-            card.classList.add("dragging");
-            ev.dataTransfer.effectAllowed="move";
-          });
-          card.addEventListener("dragend",()=>card.classList.remove("dragging"));
-        }
-        const txt=h("div",{style:{fontSize:"12px",lineHeight:"1.4"}});
-        txt.textContent=(TE[item.type]||"📌")+" "+(item.text.length>90?item.text.substring(0,90)+"...":item.text);
-        if(item.notes){txt.append(h("span",{class:"note-dot",title:"Tiene notas"}))}
-        const meta=h("div",{style:{fontSize:"10px",color:"#94a3b8",marginTop:"4px"}});
-        meta.append(h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc}},item.mt.substring(0,25)),document.createTextNode(" "+item.q+" · "+item.month));
+        if(isAdmin){card.addEventListener("dragstart",ev=>{dragItem={mk:item.mk,id:item.id};card.classList.add("dragging");ev.dataTransfer.effectAllowed="move"});card.addEventListener("dragend",()=>card.classList.remove("dragging"))}
+        const txt=h("div",{style:{fontSize:"12px",lineHeight:"1.4"}});txt.textContent=(TE[item.type]||"📌")+" "+(item.text.length>90?item.text.substring(0,90)+"...":item.text);
+        if(item.notes)txt.append(h("span",{class:"note-dot",title:"Tiene notas"}));
+        const meta=h("div",{style:{fontSize:"10px",color:"#94a3b8",marginTop:"4px"}});meta.append(h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc}},item.mt.substring(0,25)),document.createTextNode(" "+item.q+" · "+item.month));
         card.append(txt,meta);col.append(card);
       });
       kg.append(col);
@@ -590,25 +550,10 @@ function render(){
     C.append(kg);
   }
 
-  // CHECKLIST
-  if(view==="checklist"){
-    Object.entries(data).filter(([k])=>fMeta==="all"||fMeta===k).forEach(([mk,meta])=>{
-      const items=meta.items.filter(i=>matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
-      if(!items.length)return;
-      const done=items.filter(i=>i.status==="completado").length;
-      const sec=h("div",{class:"cl-section"});
-      const hd=h("div",{class:"cl-head"});
-      hd.append(h("div",{class:"cl-bar",style:{background:meta.color}}),h("h3",{style:{fontSize:"15px",fontWeight:"700"}},meta.title),h("span",{style:{fontSize:"12px",color:"#64748b",fontWeight:"600"}},"("+meta.weight+")"),h("span",{style:{fontSize:"12px",color:"#10b981",marginLeft:"auto",fontWeight:"600"}},done+"/"+items.length));
-      sec.append(hd);
-      items.forEach(i=>sec.append(renderItem({...i,mk,mt:meta.title,mc:meta.color,mw:meta.weight},true)));
-      C.append(sec);
-    });
-  }
+  // Checklist
+  if(view==="checklist"){Object.entries(data).filter(([k])=>fMeta==="all"||fMeta===k).forEach(([mk,meta])=>{const items=meta.items.filter(i=>matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));if(!items.length)return;const done=items.filter(i=>i.status==="completado").length;const sec=h("div",{class:"cl-section"});const hd=h("div",{class:"cl-head"});hd.append(h("div",{class:"cl-bar",style:{background:meta.color}}),h("h3",{style:{fontSize:"15px",fontWeight:"700"}},meta.title),h("span",{style:{fontSize:"12px",color:"#64748b",fontWeight:"600"}},"("+meta.weight+")"),h("span",{style:{fontSize:"12px",color:"#10b981",marginLeft:"auto",fontWeight:"600"}},done+"/"+items.length));sec.append(hd);items.forEach(i=>sec.append(renderItem({...i,mk,mt:meta.title,mc:meta.color,mw:meta.weight},true)));C.append(sec)})}
 
-  // Footer
-  const ft=isAdmin
-    ?"Sincronización multi-dispositivo activa. Haz clic en cualquier ítem para ver detalles, cambiar estado y agregar notas. En Kanban puedes arrastrar tarjetas entre columnas."
-    :"Modo solo lectura. Solo el mentor puede modificar estados y notas. Los cambios se sincronizan en tiempo real.";
+  const ft=isAdmin?"Haz clic en cualquier ítem para ver detalles, cambiar estado y agregar notas. En Kanban puedes arrastrar tarjetas.":"Modo solo lectura. Los cambios se sincronizan en tiempo real.";
   C.append(h("div",{class:"footer"},h("strong",null,isAdmin?"Modo Admin. ":"Modo lectura. "),ft));
   app.append(C);
 }
