@@ -5,18 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plan Mentor Frontend 2026 - Juan Camilo Naranjo</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
-
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 .app-container{max-width:1100px;margin:0 auto;padding:16px}
-
-/* Login screen */
 .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a,#1e3a5f)}
 .login-card{background:#fff;border-radius:16px;padding:48px 40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .login-card h1{font-size:24px;color:#0f172a;margin-bottom:8px}
@@ -25,15 +20,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 28px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;font-size:15px;font-weight:600;color:#1e293b;cursor:pointer;transition:all .2s}
 .btn-google:hover{background:#f8fafc;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .btn-google svg{width:20px;height:20px}
-
-/* User bar */
-.user-bar{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:8px 0;margin-bottom:8px}
+.user-bar{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:8px 0;margin-bottom:8px;flex-wrap:wrap}
 .user-info{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b}
 .user-avatar{width:28px;height:28px;border-radius:50%;border:2px solid #e2e8f0}
 .btn-logout{padding:4px 12px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:12px;color:#64748b;cursor:pointer}
 .btn-logout:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
-
-/* Header */
+.badge-readonly{padding:4px 10px;border-radius:6px;background:#dbeafe;color:#1d4ed8;font-size:12px;font-weight:600}
+.badge-admin{padding:4px 10px;border-radius:6px;background:#dcfce7;color:#16a34a;font-size:12px;font-weight:600}
 .header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);color:#fff;padding:24px 28px;border-radius:12px;margin-bottom:20px}
 .header h1{font-size:22px;font-weight:700}
 .header p{margin-top:4px;opacity:.8;font-size:14px}
@@ -46,8 +39,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .stat-label{font-size:12px;opacity:.7}
 .progress-bg{margin-top:12px;background:rgba(255,255,255,.15);border-radius:6px;height:8px;overflow:hidden}
 .progress-fill{background:#10b981;height:8px;border-radius:6px;transition:width .4s ease}
-
-/* Meta cards */
 .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
 .meta-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s}
 .meta-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
@@ -57,8 +48,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .mini-bg{margin-top:6px;background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden}
 .mini-fill{height:6px;border-radius:4px;transition:width .3s}
 .meta-count{font-size:11px;color:#64748b;margin-top:3px}
-
-/* Controls */
 .controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
 .tab{padding:6px 14px;border-radius:6px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s}
 .tab.on{background:#1e3a5f;color:#fff}
@@ -68,60 +57,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px;background:#fff}
 .btn-clear{padding:5px 10px;border-radius:6px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;cursor:pointer;font-weight:600}
 .btn-reset{margin-left:auto;padding:5px 10px;border-radius:6px;border:1px solid #fca5a5;background:#fff;color:#dc2626;font-size:11px;cursor:pointer;font-weight:600}
-
-/* Items */
 .q-head{font-size:16px;font-weight:700;margin:0 0 10px;padding:6px 12px;background:#fff;border-radius:6px;display:inline-block}
-.item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .1s}
-.item:hover{background:#f8fafc}
+.item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;transition:all .1s}
+.item.clickable{cursor:pointer}
+.item.clickable:hover{background:#f8fafc}
+.item.readonly{cursor:default;opacity:.95}
 .chk{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:12px;color:#fff;font-weight:700;transition:all .2s}
 .item-body{flex:1;min-width:0}
 .item-text{font-size:13px;line-height:1.4;transition:all .2s}
 .item-meta{font-size:11px;color:#94a3b8;margin-top:2px}
 .tag{padding:1px 6px;border-radius:4px;font-weight:600;font-size:11px}
-
-/* Kanban */
 .kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .kcol{background:#f8fafc;border-radius:10px;padding:12px;min-height:200px}
 .kcol-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .kdot{width:10px;height:10px;border-radius:50%}
-.kcard{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .1s}
-.kcard:hover{background:#f8fafc;transform:translateY(-1px)}
-
-/* Checklist */
+.kcard{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .1s}
+.kcard.clickable{cursor:pointer}
+.kcard.clickable:hover{background:#f8fafc;transform:translateY(-1px)}
+.kcard.readonly{cursor:default}
 .cl-section{margin-bottom:20px}
 .cl-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .cl-bar{width:6px;height:24px;border-radius:3px}
-
-/* Footer */
 .footer{margin-top:20px;padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:12px;color:#166534;line-height:1.6}
-
-/* Loading */
 .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:#64748b;font-size:14px}
 .spinner{width:24px;height:24px;border:3px solid #e2e8f0;border-top:3px solid #1e3a5f;border-radius:50%;animation:spin .8s linear infinite;margin-right:12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Sync status */
 .sync-toast{position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:1000}
 .sync-toast.show{opacity:1}
-
-@media(max-width:700px){
-  .kanban{grid-template-columns:1fr}
-  .stats-row{gap:10px}
-  .stat-box{min-width:70px;padding:8px 10px}
-  .stat-num{font-size:22px}
-  .login-card{padding:32px 24px}
-}
+@media(max-width:700px){.kanban{grid-template-columns:1fr}.stats-row{gap:10px}.stat-box{min-width:70px;padding:8px 10px}.stat-num{font-size:22px}.login-card{padding:32px 24px}}
 </style>
 </head>
 <body>
-
 <div id="app"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
 <div id="sync-toast" class="sync-toast"></div>
-
 <script>
-// ============================================================
-// 🔥 FIREBASE CONFIG — REEMPLAZA CON TUS VALORES
-// ============================================================
 firebase.initializeApp({
   apiKey: "AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",
   authDomain: "plan-mentor-camilo-naranjo.firebaseapp.com",
@@ -131,19 +100,17 @@ firebase.initializeApp({
   appId: "1:291479276112:web:cfaf874d088697f0dedf55",
   measurementId: "G-WYVJ639RCS"
 });
-// ============================================================
 
 const db = firebase.firestore();
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
-
-// Enable offline persistence
 db.enablePersistence({ synchronizeTabs: true }).catch(e => console.log("Persistence:", e.code));
 
+const ADMIN_EMAIL = "camilo2279@gmail.com";
 const STATUSES = ["pendiente", "en progreso", "completado"];
 const SC = { pendiente: "#94a3b8", "en progreso": "#f59e0b", completado: "#10b981" };
 const SL = { pendiente: "Pendiente", "en progreso": "En progreso", completado: "Completado" };
-const TE = { entregable:"📄", "reunión":"🤝", piloto:"🚀", "guild-ia":"🤖", guild:"🎓", dojo:"💻", "medición":"📊", radar:"📡", iniciativa:"💡", "guía":"📘", arenacoders:"🏆", "formación":"📚", "certificación":"🎖️" };
+const TE = { entregable:"📄","reunión":"🤝",piloto:"🚀","guild-ia":"🤖",guild:"🎓",dojo:"💻","medición":"📊",radar:"📡",iniciativa:"💡","guía":"📘",arenacoders:"🏆","formación":"📚","certificación":"🎖️" };
 const MO = ["Ene","Feb","Feb-Abr","Mar","Abr","May","May-Jul","Jun","Jun-Dic","Jul","Ago","Ago-Nov","Ago-Feb27","Sep","Oct","Nov","Dic","Todo el año"];
 
 const INIT = {
@@ -242,30 +209,28 @@ formacion:{title:"Formación Personal del Mentor",weight:"Transversal",color:"#6
 ]}
 };
 
-// ============================================================
-// STATE
-// ============================================================
 let data = null, view = "timeline", fMeta = "all", fQ = "all", fSt = "all";
 let lastSaved = "", currentUser = null, saveTimeout = null, unsubFirestore = null;
+let isAdmin = false;
 
-// ============================================================
-// FIREBASE SYNC
-// ============================================================
+// FIREBASE SYNC — uses admin's UID as doc ID
+const ADMIN_DOC = "admin-plan";
+
 function getDocRef() {
-  if (!currentUser) return null;
-  return db.collection("mentor-plan").doc(currentUser.uid);
+  return db.collection("mentor-plan").doc(ADMIN_DOC);
 }
 
 async function loadFromFirestore() {
   const ref = getDocRef();
-  if (!ref) return;
   try {
     const doc = await ref.get();
     if (doc.exists) {
       data = doc.data().plan;
-    } else {
+    } else if (isAdmin) {
       data = JSON.parse(JSON.stringify(INIT));
       await ref.set({ plan: data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    } else {
+      data = JSON.parse(JSON.stringify(INIT));
     }
   } catch (e) {
     console.error("Load error:", e);
@@ -275,18 +240,19 @@ async function loadFromFirestore() {
 
 function listenToFirestore() {
   const ref = getDocRef();
-  if (!ref) return;
   if (unsubFirestore) unsubFirestore();
   unsubFirestore = ref.onSnapshot(doc => {
     if (doc.exists && doc.metadata.hasPendingWrites === false) {
       data = doc.data().plan;
       render();
-      showToast("📥 Sincronizado desde otro dispositivo");
+      if (!isAdmin) showToast("📥 Plan actualizado por el mentor");
+      else showToast("📥 Sincronizado");
     }
   });
 }
 
 function saveToFirestore() {
+  if (!isAdmin) return;
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
     const ref = getDocRef();
@@ -304,65 +270,44 @@ function saveToFirestore() {
 }
 
 function showToast(msg) {
-  const el = document.getElementById("sync-toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2500);
+  const t = document.getElementById("sync-toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
 }
 
 function updateSaveIndicator() {
   const el = document.getElementById("save-ind");
   if (el) el.textContent = lastSaved ? "Guardado: " + lastSaved : "";
-  const dot = document.getElementById("save-dot");
-  if (dot) dot.style.background = "#10b981";
 }
 
-// ============================================================
 // AUTH
-// ============================================================
 auth.onAuthStateChanged(async user => {
   currentUser = user;
   if (user) {
+    isAdmin = user.email === ADMIN_EMAIL;
     await loadFromFirestore();
     listenToFirestore();
     render();
   } else {
-    data = null;
+    data = null; isAdmin = false;
     if (unsubFirestore) { unsubFirestore(); unsubFirestore = null; }
     renderLogin();
   }
 });
 
-function signIn() {
-  auth.signInWithPopup(provider).catch(e => {
-    console.error("Auth error:", e);
-    alert("Error de autenticación: " + e.message);
-  });
-}
+function signIn() { auth.signInWithPopup(provider).catch(e => { console.error("Auth error:", e); alert("Error de autenticación: " + e.message); }); }
+function signOut() { auth.signOut(); }
 
-function signOut() {
-  auth.signOut();
-}
-
-// ============================================================
 // LOGIC
-// ============================================================
 function toggle(mk, id) {
+  if (!isAdmin) { showToast("🔒 Solo lectura — solo el mentor puede modificar"); return; }
   const item = data[mk].items.find(i => i.id === id);
-  if (item) {
-    const idx = STATUSES.indexOf(item.status);
-    item.status = STATUSES[(idx + 1) % 3];
-    saveToFirestore();
-    render();
-  }
+  if (item) { const idx = STATUSES.indexOf(item.status); item.status = STATUSES[(idx + 1) % 3]; saveToFirestore(); render(); }
 }
 
 function resetAll() {
-  if (confirm("¿Reiniciar todo el progreso? No se puede deshacer.")) {
-    data = JSON.parse(JSON.stringify(INIT));
-    saveToFirestore();
-    render();
-  }
+  if (!isAdmin) return;
+  if (confirm("¿Reiniciar todo el progreso? No se puede deshacer.")) { data = JSON.parse(JSON.stringify(INIT)); saveToFirestore(); render(); }
 }
 
 function matchQ(iq, fq) {
@@ -376,80 +321,61 @@ function getAllItems() {
   return Object.entries(data).flatMap(([k, v]) => v.items.map(i => ({ ...i, mk: k, mt: v.title, mc: v.color })));
 }
 
-// ============================================================
-// RENDER HELPERS
-// ============================================================
-function el(tag, attrs, ...ch) {
-  const e = document.createElement(tag);
+// RENDER
+function e(tag, attrs, ...ch) {
+  const el = document.createElement(tag);
   if (attrs) Object.entries(attrs).forEach(([k, v]) => {
-    if (k === "style" && typeof v === "object") Object.assign(e.style, v);
-    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
-    else if (k === "class") e.className = v;
-    else e.setAttribute(k, v);
+    if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === "class") el.className = v;
+    else el.setAttribute(k, v);
   });
-  ch.flat().forEach(c => { if (c != null) e.append(typeof c === "string" ? document.createTextNode(c) : c); });
-  return e;
+  ch.flat().forEach(c => { if (c != null) el.append(typeof c === "string" ? document.createTextNode(c) : c); });
+  return el;
 }
 
 function renderLogin() {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-  const screen = el("div", { class: "login-screen" });
-  const card = el("div", { class: "login-card" });
-  card.append(
-    el("div", { class: "emoji" }, "🎯"),
-    el("h1", null, "Plan Mentor Frontend 2026"),
-    el("p", null, "Juan Camilo Naranjo Marín · CIS Protección\nInicia sesión para sincronizar tu progreso en todos tus dispositivos."),
-    el("button", { class: "btn-google", onClick: signIn },
-      el("svg", { viewBox: "0 0 24 24" }),
-      "Iniciar con Google"
-    )
-  );
-  // Google icon
-  const svg = card.querySelector("svg");
+  const app = document.getElementById("app"); app.innerHTML = "";
+  const screen = e("div", { class: "login-screen" });
+  const card = e("div", { class: "login-card" });
+  const btn = e("button", { class: "btn-google", onClick: signIn });
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("width", "20"); svg.setAttribute("height", "20");
   svg.innerHTML = '<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>';
-  screen.append(card);
-  app.append(screen);
+  btn.append(svg, document.createTextNode("Iniciar con Google"));
+  card.append(e("div", { class: "emoji" }, "🎯"), e("h1", null, "Plan Mentor Frontend 2026"), e("p", null, "Juan Camilo Naranjo Marín · CIS Protección"), e("p", { style: { color: "#94a3b8", fontSize: "13px", marginBottom: "24px" } }, "Inicia sesión para ver el plan. Solo el mentor puede modificarlo."), btn);
+  screen.append(card); app.append(screen);
 }
 
 function renderItem(item, compact) {
-  const row = el("div", { class: "item", style: { borderLeft: `4px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
-  const chk = el("div", { class: "chk", style: { borderColor: SC[item.status], background: item.status === "completado" ? "#10b981" : item.status === "en progreso" ? "#fef3c7" : "#fff" } });
+  const cls = isAdmin ? "item clickable" : "item readonly";
+  const row = e("div", { class: cls, style: { borderLeft: `4px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
+  const chk = e("div", { class: "chk", style: { borderColor: SC[item.status], background: item.status === "completado" ? "#10b981" : item.status === "en progreso" ? "#fef3c7" : "#fff" } });
   chk.textContent = item.status === "completado" ? "✓" : item.status === "en progreso" ? "⏳" : "";
-  const body = el("div", { class: "item-body" });
-  const txt = el("div", { class: "item-text", style: { textDecoration: item.status === "completado" ? "line-through" : "none", color: item.status === "completado" ? "#94a3b8" : "#1e293b" } });
+  const body = e("div", { class: "item-body" });
+  const txt = e("div", { class: "item-text", style: { textDecoration: item.status === "completado" ? "line-through" : "none", color: item.status === "completado" ? "#94a3b8" : "#1e293b" } });
   txt.textContent = (TE[item.type] || "📌") + " " + item.text;
-  const meta = el("div", { class: "item-meta" });
-  if (!compact) {
-    const tag = el("span", { class: "tag", style: { background: item.mc + "20", color: item.mc, marginRight: "6px" } });
-    tag.textContent = item.mt.substring(0, 30);
-    meta.append(tag);
-  }
+  const meta = e("div", { class: "item-meta" });
+  if (!compact) { const tag = e("span", { class: "tag", style: { background: item.mc + "20", color: item.mc, marginRight: "6px" } }); tag.textContent = item.mt.substring(0, 30); meta.append(tag); }
   meta.append(document.createTextNode(item.month + " "));
-  const stag = el("span", { class: "tag", style: { marginLeft: "8px", background: SC[item.status] + "30", color: SC[item.status] } });
-  stag.textContent = SL[item.status];
-  meta.append(stag);
-  body.append(txt, meta);
-  row.append(chk, body);
-  return row;
+  const stag = e("span", { class: "tag", style: { marginLeft: "8px", background: SC[item.status] + "30", color: SC[item.status] } }); stag.textContent = SL[item.status]; meta.append(stag);
+  body.append(txt, meta); row.append(chk, body); return row;
 }
 
-// ============================================================
-// MAIN RENDER
-// ============================================================
 function render() {
   if (!data || !currentUser) return;
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
-  const container = el("div", { class: "app-container" });
+  const app = document.getElementById("app"); app.innerHTML = "";
+  const container = e("div", { class: "app-container" });
 
   // User bar
-  const ub = el("div", { class: "user-bar" });
-  const ui = el("div", { class: "user-info" });
-  if (currentUser.photoURL) ui.append(el("img", { class: "user-avatar", src: currentUser.photoURL, referrerpolicy: "no-referrer" }));
+  const ub = e("div", { class: "user-bar" });
+  const ui = e("div", { class: "user-info" });
+  if (currentUser.photoURL) ui.append(e("img", { class: "user-avatar", src: currentUser.photoURL, referrerpolicy: "no-referrer" }));
   ui.append(document.createTextNode(currentUser.displayName || currentUser.email));
-  ub.append(ui, el("button", { class: "btn-logout", onClick: signOut }, "Cerrar sesión"));
+  ub.append(ui);
+  if (isAdmin) ub.append(e("span", { class: "badge-admin" }, "Admin"));
+  else ub.append(e("span", { class: "badge-readonly" }, "Solo lectura"));
+  ub.append(e("button", { class: "btn-logout", onClick: signOut }, "Cerrar sesión"));
   container.append(ub);
 
   const all = getAllItems();
@@ -457,51 +383,44 @@ function render() {
   const pct = stats.t ? Math.round(stats.c / stats.t * 100) : 0;
 
   // Header
-  const hdr = el("div", { class: "header" });
-  const hTop = el("div", { class: "header-top" });
-  hTop.append(
-    el("div", null, el("h1", null, "Plan Mentor Frontend 2026"), el("p", null, "Juan Camilo Naranjo Marín · CIS Protección · Líder Guild Frontend")),
-    el("div", { class: "save-indicator" }, el("span", { id: "save-ind" }, lastSaved ? "Guardado: " + lastSaved : ""), el("span", { id: "save-dot", class: "save-dot", style: { background: "#10b981" } }))
-  );
+  const hdr = e("div", { class: "header" });
+  const hTop = e("div", { class: "header-top" });
+  hTop.append(e("div", null, e("h1", null, "Plan Mentor Frontend 2026"), e("p", null, "Juan Camilo Naranjo Marín · CIS Protección · Líder Guild Frontend")));
+  if (isAdmin) hTop.append(e("div", { class: "save-indicator" }, e("span", { id: "save-ind" }, lastSaved ? "Guardado: " + lastSaved : ""), e("span", { id: "save-dot", class: "save-dot", style: { background: "#10b981" } })));
   hdr.append(hTop);
-
-  const sr = el("div", { class: "stats-row" });
+  const sr = e("div", { class: "stats-row" });
   [[pct + "%", "Progreso total", "#fff"], [stats.c, "Completados", "#10b981"], [stats.p, "En progreso", "#f59e0b"], [stats.pe, "Pendientes", "#94a3b8"]].forEach(([n, l, c]) => {
-    sr.append(el("div", { class: "stat-box" }, el("div", { class: "stat-num", style: { color: c } }, String(n)), el("div", { class: "stat-label" }, l)));
+    sr.append(e("div", { class: "stat-box" }, e("div", { class: "stat-num", style: { color: c } }, String(n)), e("div", { class: "stat-label" }, l)));
   });
   hdr.append(sr);
-  const pbg = el("div", { class: "progress-bg" });
-  pbg.append(el("div", { class: "progress-fill", style: { width: pct + "%" } }));
-  hdr.append(pbg);
+  const pbg = e("div", { class: "progress-bg" }); pbg.append(e("div", { class: "progress-fill", style: { width: pct + "%" } })); hdr.append(pbg);
   container.append(hdr);
 
   // Meta cards
-  const mg = el("div", { class: "meta-grid" });
+  const mg = e("div", { class: "meta-grid" });
   Object.entries(data).forEach(([k, v]) => {
     const t = v.items.length, c = v.items.filter(i => i.status === "completado").length, p = t ? Math.round(c / t * 100) : 0;
-    const card = el("div", { class: "meta-card" + (fMeta === k ? " active" : ""), style: { borderLeft: `4px solid ${v.color}`, "--mc": v.color }, onClick: () => { fMeta = fMeta === k ? "all" : k; render(); } });
-    card.append(el("div", { class: "meta-weight", style: { color: v.color } }, v.weight), el("div", { class: "meta-title" }, v.title));
-    const mb = el("div", { class: "mini-bg" });
-    mb.append(el("div", { class: "mini-fill", style: { background: v.color, width: p + "%" } }));
-    card.append(mb, el("div", { class: "meta-count" }, `${c}/${t} (${p}%)`));
-    mg.append(card);
+    const card = e("div", { class: "meta-card" + (fMeta === k ? " active" : ""), style: { borderLeft: `4px solid ${v.color}`, "--mc": v.color }, onClick: () => { fMeta = fMeta === k ? "all" : k; render(); } });
+    card.append(e("div", { class: "meta-weight", style: { color: v.color } }, v.weight), e("div", { class: "meta-title" }, v.title));
+    const mb = e("div", { class: "mini-bg" }); mb.append(e("div", { class: "mini-fill", style: { background: v.color, width: p + "%" } }));
+    card.append(mb, e("div", { class: "meta-count" }, `${c}/${t} (${p}%)`)); mg.append(card);
   });
   container.append(mg);
 
   // Controls
-  const ctrl = el("div", { class: "controls" });
+  const ctrl = e("div", { class: "controls" });
   [["timeline", "Cronológico"], ["kanban", "Kanban"], ["checklist", "Checklist"]].forEach(([v, l]) => {
-    ctrl.append(el("button", { class: "tab" + (view === v ? " on" : ""), onClick: () => { view = v; render(); } }, l));
+    ctrl.append(e("button", { class: "tab" + (view === v ? " on" : ""), onClick: () => { view = v; render(); } }, l));
   });
-  ctrl.append(el("span", { class: "sep" }));
-  const selQ = el("select", { onChange: e => { fQ = e.target.value; render(); } });
-  [["all", "Todos los Q"], ["Q1", "Q1"], ["Q2", "Q2"], ["Q3", "Q3"], ["Q4", "Q4"]].forEach(([v, l]) => { const o = el("option", { value: v }, l); if (v === fQ) o.selected = true; selQ.append(o); });
+  ctrl.append(e("span", { class: "sep" }));
+  const selQ = e("select", { onChange: ev => { fQ = ev.target.value; render(); } });
+  [["all", "Todos los Q"], ["Q1", "Q1"], ["Q2", "Q2"], ["Q3", "Q3"], ["Q4", "Q4"]].forEach(([v, l]) => { const o = e("option", { value: v }, l); if (v === fQ) o.selected = true; selQ.append(o); });
   ctrl.append(selQ);
-  const selS = el("select", { onChange: e => { fSt = e.target.value; render(); } });
-  [["all", "Todos"], ["pendiente", "Pendiente"], ["en progreso", "En progreso"], ["completado", "Completado"]].forEach(([v, l]) => { const o = el("option", { value: v }, l); if (v === fSt) o.selected = true; selS.append(o); });
+  const selS = e("select", { onChange: ev => { fSt = ev.target.value; render(); } });
+  [["all", "Todos"], ["pendiente", "Pendiente"], ["en progreso", "En progreso"], ["completado", "Completado"]].forEach(([v, l]) => { const o = e("option", { value: v }, l); if (v === fSt) o.selected = true; selS.append(o); });
   ctrl.append(selS);
-  if (fMeta !== "all" || fQ !== "all" || fSt !== "all") ctrl.append(el("button", { class: "btn-clear", onClick: () => { fMeta = "all"; fQ = "all"; fSt = "all"; render(); } }, "Limpiar filtros"));
-  ctrl.append(el("button", { class: "btn-reset", onClick: resetAll }, "Reiniciar todo"));
+  if (fMeta !== "all" || fQ !== "all" || fSt !== "all") ctrl.append(e("button", { class: "btn-clear", onClick: () => { fMeta = "all"; fQ = "all"; fSt = "all"; render(); } }, "Limpiar filtros"));
+  if (isAdmin) ctrl.append(e("button", { class: "btn-reset", onClick: resetAll }, "Reiniciar todo"));
   container.append(ctrl);
 
   const filtered = getAllItems().filter(i => (fMeta === "all" || i.mk === fMeta) && matchQ(i.q, fQ) && (fSt === "all" || i.status === fSt));
@@ -511,8 +430,8 @@ function render() {
     ["Q1", "Q2", "Q3", "Q4"].filter(q => fQ === "all" || fQ === q).forEach(q => {
       const qI = filtered.filter(i => matchQ(i.q, q)).sort((a, b) => MO.indexOf(a.month) - MO.indexOf(b.month));
       if (!qI.length) return;
-      const sec = el("div", { style: { marginBottom: "20px" } });
-      sec.append(el("h3", { class: "q-head" }, q + " · " + (q === "Q1" ? "Ene–Mar" : q === "Q2" ? "Abr–Jun" : q === "Q3" ? "Jul–Sep" : "Oct–Dic") + " 2026"));
+      const sec = e("div", { style: { marginBottom: "20px" } });
+      sec.append(e("h3", { class: "q-head" }, q + " · " + (q === "Q1" ? "Ene–Mar" : q === "Q2" ? "Abr–Jun" : q === "Q3" ? "Jul–Sep" : "Oct–Dic") + " 2026"));
       qI.forEach(i => sec.append(renderItem(i, false)));
       container.append(sec);
     });
@@ -520,22 +439,18 @@ function render() {
 
   // Kanban
   if (view === "kanban") {
-    const kg = el("div", { class: "kanban" });
+    const kg = e("div", { class: "kanban" });
     STATUSES.forEach(st => {
-      const col = el("div", { class: "kcol" });
-      const hd = el("div", { class: "kcol-head" });
+      const col = e("div", { class: "kcol" });
+      const hd = e("div", { class: "kcol-head" });
       const cnt = filtered.filter(i => i.status === st);
-      hd.append(el("div", { class: "kdot", style: { background: SC[st] } }), el("span", { style: { fontWeight: "700", fontSize: "14px" } }, SL[st]), el("span", { style: { fontSize: "12px", color: "#94a3b8", marginLeft: "auto" } }, String(cnt.length)));
+      hd.append(e("div", { class: "kdot", style: { background: SC[st] } }), e("span", { style: { fontWeight: "700", fontSize: "14px" } }, SL[st]), e("span", { style: { fontSize: "12px", color: "#94a3b8", marginLeft: "auto" } }, String(cnt.length)));
       col.append(hd);
       cnt.forEach(item => {
-        const card = el("div", { class: "kcard", style: { borderLeft: `3px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
-        card.append(
-          el("div", { class: "kanban-card-text", style: { fontSize: "12px", lineHeight: "1.4" } }, (TE[item.type] || "📌") + " " + (item.text.length > 90 ? item.text.substring(0, 90) + "..." : item.text)),
-          el("div", { style: { fontSize: "10px", color: "#94a3b8", marginTop: "4px" } },
-            el("span", { class: "tag", style: { background: item.mc + "20", color: item.mc } }, item.mt.substring(0, 25)),
-            " " + item.q + " · " + item.month
-          )
-        );
+        const cls = isAdmin ? "kcard clickable" : "kcard readonly";
+        const card = e("div", { class: cls, style: { borderLeft: `3px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
+        card.append(e("div", { style: { fontSize: "12px", lineHeight: "1.4" } }, (TE[item.type] || "📌") + " " + (item.text.length > 90 ? item.text.substring(0, 90) + "..." : item.text)),
+          e("div", { style: { fontSize: "10px", color: "#94a3b8", marginTop: "4px" } }, e("span", { class: "tag", style: { background: item.mc + "20", color: item.mc } }, item.mt.substring(0, 25)), " " + item.q + " · " + item.month));
         col.append(card);
       });
       kg.append(col);
@@ -549,9 +464,9 @@ function render() {
       const items = meta.items.filter(i => matchQ(i.q, fQ) && (fSt === "all" || i.status === fSt));
       if (!items.length) return;
       const done = items.filter(i => i.status === "completado").length;
-      const sec = el("div", { class: "cl-section" });
-      const hd = el("div", { class: "cl-head" });
-      hd.append(el("div", { class: "cl-bar", style: { background: meta.color } }), el("h3", { style: { fontSize: "15px", fontWeight: "700" } }, meta.title), el("span", { style: { fontSize: "12px", color: "#64748b", fontWeight: "600" } }, "(" + meta.weight + ")"), el("span", { style: { fontSize: "12px", color: "#10b981", marginLeft: "auto", fontWeight: "600" } }, done + "/" + items.length));
+      const sec = e("div", { class: "cl-section" });
+      const hd = e("div", { class: "cl-head" });
+      hd.append(e("div", { class: "cl-bar", style: { background: meta.color } }), e("h3", { style: { fontSize: "15px", fontWeight: "700" } }, meta.title), e("span", { style: { fontSize: "12px", color: "#64748b", fontWeight: "600" } }, "(" + meta.weight + ")"), e("span", { style: { fontSize: "12px", color: "#10b981", marginLeft: "auto", fontWeight: "600" } }, done + "/" + items.length));
       sec.append(hd);
       items.forEach(i => sec.append(renderItem({ ...i, mk, mt: meta.title, mc: meta.color }, true)));
       container.append(sec);
@@ -559,7 +474,10 @@ function render() {
   }
 
   // Footer
-  container.append(el("div", { class: "footer" }, el("strong", null, "Sincronización multi-dispositivo activa. "), "Tus cambios se guardan en Firebase y se sincronizan en tiempo real en todos tus dispositivos. Haz clic en cualquier ítem para ciclar: Pendiente → En progreso → Completado."));
+  const footerText = isAdmin
+    ? "Sincronización multi-dispositivo activa. Tus cambios se guardan en Firebase en tiempo real. Haz clic en cualquier ítem para ciclar: Pendiente → En progreso → Completado."
+    : "Estás en modo solo lectura. Solo el mentor (Juan Camilo) puede modificar el estado de los ítems. Los cambios se sincronizan en tiempo real.";
+  container.append(e("div", { class: "footer" }, e("strong", null, isAdmin ? "Modo Admin. " : "Modo lectura. "), footerText));
   app.append(container);
 }
 </script>
