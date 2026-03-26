@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Mentor Frontend 2026 - Juan Camilo Naranjo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.app-container{max-width:1100px;margin:0 auto;padding:16px}
+
+/* Login screen */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a,#1e3a5f)}
+.login-card{background:#fff;border-radius:16px;padding:48px 40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-card h1{font-size:24px;color:#0f172a;margin-bottom:8px}
+.login-card p{color:#64748b;font-size:14px;margin-bottom:32px;line-height:1.5}
+.login-card .emoji{font-size:48px;margin-bottom:16px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 28px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;font-size:15px;font-weight:600;color:#1e293b;cursor:pointer;transition:all .2s}
+.btn-google:hover{background:#f8fafc;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.btn-google svg{width:20px;height:20px}
+
+/* User bar */
+.user-bar{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:8px 0;margin-bottom:8px}
+.user-info{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b}
+.user-avatar{width:28px;height:28px;border-radius:50%;border:2px solid #e2e8f0}
+.btn-logout{padding:4px 12px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:12px;color:#64748b;cursor:pointer}
+.btn-logout:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+
+/* Header */
+.header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);color:#fff;padding:24px 28px;border-radius:12px;margin-bottom:20px}
+.header h1{font-size:22px;font-weight:700}
+.header p{margin-top:4px;opacity:.8;font-size:14px}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+.save-indicator{font-size:11px;opacity:.7;display:flex;align-items:center;gap:6px}
+.save-dot{width:8px;height:8px;border-radius:50%;transition:background .3s}
+.stats-row{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap}
+.stat-box{background:rgba(255,255,255,.1);border-radius:8px;padding:10px 16px;min-width:90px}
+.stat-num{font-size:28px;font-weight:700}
+.stat-label{font-size:12px;opacity:.7}
+.progress-bg{margin-top:12px;background:rgba(255,255,255,.15);border-radius:6px;height:8px;overflow:hidden}
+.progress-fill{background:#10b981;height:8px;border-radius:6px;transition:width .4s ease}
+
+/* Meta cards */
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+.meta-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s}
+.meta-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.meta-card.active{box-shadow:0 0 0 2px var(--mc)}
+.meta-weight{font-size:11px;font-weight:600;margin-bottom:2px}
+.meta-title{font-size:13px;font-weight:600;line-height:1.3}
+.mini-bg{margin-top:6px;background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden}
+.mini-fill{height:6px;border-radius:4px;transition:width .3s}
+.meta-count{font-size:11px;color:#64748b;margin-top:3px}
+
+/* Controls */
+.controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tab{padding:6px 14px;border-radius:6px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s}
+.tab.on{background:#1e3a5f;color:#fff}
+.tab:not(.on){background:#e2e8f0;color:#475569}
+.tab:not(.on):hover{background:#cbd5e1}
+.sep{width:1px;height:20px;background:#cbd5e1;margin:0 4px}
+select{padding:5px 8px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px;background:#fff}
+.btn-clear{padding:5px 10px;border-radius:6px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;cursor:pointer;font-weight:600}
+.btn-reset{margin-left:auto;padding:5px 10px;border-radius:6px;border:1px solid #fca5a5;background:#fff;color:#dc2626;font-size:11px;cursor:pointer;font-weight:600}
+
+/* Items */
+.q-head{font-size:16px;font-weight:700;margin:0 0 10px;padding:6px 12px;background:#fff;border-radius:6px;display:inline-block}
+.item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .1s}
+.item:hover{background:#f8fafc}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:12px;color:#fff;font-weight:700;transition:all .2s}
+.item-body{flex:1;min-width:0}
+.item-text{font-size:13px;line-height:1.4;transition:all .2s}
+.item-meta{font-size:11px;color:#94a3b8;margin-top:2px}
+.tag{padding:1px 6px;border-radius:4px;font-weight:600;font-size:11px}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kcol{background:#f8fafc;border-radius:10px;padding:12px;min-height:200px}
+.kcol-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.kdot{width:10px;height:10px;border-radius:50%}
+.kcard{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .1s}
+.kcard:hover{background:#f8fafc;transform:translateY(-1px)}
+
+/* Checklist */
+.cl-section{margin-bottom:20px}
+.cl-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cl-bar{width:6px;height:24px;border-radius:3px}
+
+/* Footer */
+.footer{margin-top:20px;padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:12px;color:#166534;line-height:1.6}
+
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;color:#64748b;font-size:14px}
+.spinner{width:24px;height:24px;border:3px solid #e2e8f0;border-top:3px solid #1e3a5f;border-radius:50%;animation:spin .8s linear infinite;margin-right:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Sync status */
+.sync-toast{position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:1000}
+.sync-toast.show{opacity:1}
+
+@media(max-width:700px){
+  .kanban{grid-template-columns:1fr}
+  .stats-row{gap:10px}
+  .stat-box{min-width:70px;padding:8px 10px}
+  .stat-num{font-size:22px}
+  .login-card{padding:32px 24px}
+}
+</style>
+</head>
+<body>
+
+<div id="app"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+<div id="sync-toast" class="sync-toast"></div>
+
+<script>
+// ============================================================
+// 🔥 FIREBASE CONFIG — REEMPLAZA CON TUS VALORES
+// ============================================================
+firebase.initializeApp({
+  apiKey: "TU_API_KEY_AQUÍ",
+  authDomain: "TU_PROJECT.firebaseapp.com",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_PROJECT.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+});
+// ============================================================
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// Enable offline persistence
+db.enablePersistence({ synchronizeTabs: true }).catch(e => console.log("Persistence:", e.code));
+
+const STATUSES = ["pendiente", "en progreso", "completado"];
+const SC = { pendiente: "#94a3b8", "en progreso": "#f59e0b", completado: "#10b981" };
+const SL = { pendiente: "Pendiente", "en progreso": "En progreso", completado: "Completado" };
+const TE = { entregable:"📄", "reunión":"🤝", piloto:"🚀", "guild-ia":"🤖", guild:"🎓", dojo:"💻", "medición":"📊", radar:"📡", iniciativa:"💡", "guía":"📘", arenacoders:"🏆", "formación":"📚", "certificación":"🎖️" };
+const MO = ["Ene","Feb","Feb-Abr","Mar","Abr","May","May-Jul","Jun","Jun-Dic","Jul","Ago","Ago-Nov","Ago-Feb27","Sep","Oct","Nov","Dic","Todo el año"];
+
+const INIT = {
+meta1:{title:"Adopción de IA en el Equipo CIS",weight:"20%",color:"#6366f1",items:[
+{id:"m1-01",q:"Q1",month:"Feb",text:"Diagnóstico inicial: encuesta de uso de IA actual en el equipo (baseline)",type:"entregable",status:"pendiente"},
+{id:"m1-02",q:"Q1",month:"Feb",text:"Definir con cada Senior qué herramienta de IA adoptará su célula este año",type:"reunión",status:"pendiente"},
+{id:"m1-03",q:"Q1",month:"Mar",text:"Piloto IA #1: Validador de código frontend con IA",type:"piloto",status:"pendiente"},
+{id:"m1-04",q:"Q1",month:"Mar",text:"Sesión Guild de IA #1: 'Prompt Engineering para devs frontend' — Artefacto: Guía de prompts para code review con IA",type:"guild-ia",status:"pendiente"},
+{id:"m1-05",q:"Q2",month:"Abr",text:"Encuesta trimestral #1 de adopción IA: ¿usaste IA esta semana? ¿en qué? ¿qué impacto tuvo?",type:"medición",status:"pendiente"},
+{id:"m1-06",q:"Q2",month:"May",text:"Piloto IA #2: Automatización de generación de pruebas unitarias frontend con IA",type:"piloto",status:"pendiente"},
+{id:"m1-07",q:"Q2",month:"Jun",text:"Sesión Guild de IA #2: 'IA para testing automatizado en React' — Artefacto: Template prompts + guía",type:"guild-ia",status:"pendiente"},
+{id:"m1-08",q:"Q2",month:"Jun",text:"Documentar Piloto #1: problema, solución IA, resultado medible, decisión",type:"entregable",status:"pendiente"},
+{id:"m1-09",q:"Q3",month:"Jul",text:"Encuesta trimestral #2 de adopción IA",type:"medición",status:"pendiente"},
+{id:"m1-10",q:"Q3",month:"Ago",text:"Piloto IA #3: Agente IA para documentación automática de componentes React",type:"piloto",status:"pendiente"},
+{id:"m1-11",q:"Q3",month:"Sep",text:"Sesión Guild de IA #3: 'Agentes IA aplicados al desarrollo frontend' — Artefacto: PoC + guía",type:"guild-ia",status:"pendiente"},
+{id:"m1-12",q:"Q3",month:"Sep",text:"Documentar Piloto #2 y #3",type:"entregable",status:"pendiente"},
+{id:"m1-13",q:"Q3",month:"Sep",text:"Evaluar ≥1 herramienta IA en el Radar Tecnológico",type:"entregable",status:"pendiente"},
+{id:"m1-14",q:"Q4",month:"Oct",text:"Encuesta trimestral #3 de adopción IA",type:"medición",status:"pendiente"},
+{id:"m1-15",q:"Q4",month:"Nov",text:"Sesión Guild de IA #4: 'Balance anual IA en el CIS' — Artefacto: Informe de impacto",type:"guild-ia",status:"pendiente"},
+{id:"m1-16",q:"Q4",month:"Nov",text:"Piloto IA #4 (cap 120%): IA para optimización bundles y performance",type:"piloto",status:"pendiente"},
+{id:"m1-17",q:"Q4",month:"Dic",text:"Piloto IA #5 (cap 120%): Code review asistido por IA en pipeline CI/CD",type:"piloto",status:"pendiente"},
+{id:"m1-18",q:"Q4",month:"Dic",text:"Informe final: evidencia adopción ≥80%, pilotos producción, sesiones Guild",type:"entregable",status:"pendiente"}
+]},
+meta2:{title:"Liderazgo Guild Frontend y Transferencia",weight:"20%",color:"#10b981",items:[
+{id:"m2-01",q:"Q1",month:"Ene",text:"Planificar calendario anual Guild Frontend: 6 sesiones, tema, facilitador, artefacto",type:"entregable",status:"pendiente"},
+{id:"m2-02",q:"Q1",month:"Feb",text:"Guild Frontend #1: 'Patrones React — Hooks avanzados' — Artefacto: Guía Custom Hooks CIS",type:"guild",status:"pendiente"},
+{id:"m2-03",q:"Q1",month:"Mar",text:"Dojo #1: Live coding 1h — Compound Components y Render Props",type:"dojo",status:"pendiente"},
+{id:"m2-04",q:"Q2",month:"Abr",text:"Guild Frontend #2: 'Rendimiento React — useMemo, useCallback' — Artefacto: Checklist performance",type:"guild",status:"pendiente"},
+{id:"m2-05",q:"Q2",month:"May",text:"Coordinar con arquitectura: ¿cuál API del open core entrega Frontend?",type:"reunión",status:"pendiente"},
+{id:"m2-06",q:"Q2",month:"Jun",text:"Guild Frontend #3: 'Estado asíncrono — React Query, SWR' — Artefacto: ADR estado asíncrono",type:"guild",status:"pendiente"},
+{id:"m2-07",q:"Q2",month:"Jun",text:"Dojo #2: Live coding 1h — React Query en caso real de célula",type:"dojo",status:"pendiente"},
+{id:"m2-08",q:"Q3",month:"Jul",text:"Habilitar API #1 del open core",type:"entregable",status:"pendiente"},
+{id:"m2-09",q:"Q3",month:"Ago",text:"Guild Frontend #4: 'Monorepo, micro-frontends, Module Federation' — Artefacto: PoC + README",type:"guild",status:"pendiente"},
+{id:"m2-10",q:"Q3",month:"Sep",text:"Espacio aprendizaje #1: Taller 2h Juniors — 'Componente básico a reutilizable'",type:"dojo",status:"pendiente"},
+{id:"m2-11",q:"Q4",month:"Oct",text:"Guild Frontend #5: 'Testing avanzado — MSW, Testing Library' — Artefacto: Estándar testing",type:"guild",status:"pendiente"},
+{id:"m2-12",q:"Q4",month:"Nov",text:"Guild Frontend #6 (cap 120%): 'Accesibilidad y Design Systems' — Artefacto: Guía accesibilidad",type:"guild",status:"pendiente"},
+{id:"m2-13",q:"Q4",month:"Nov",text:"Habilitar API #2 del open core (cap 120%)",type:"entregable",status:"pendiente"},
+{id:"m2-14",q:"Q4",month:"Dic",text:"Espacio aprendizaje #2: Workshop — 'Code review efectivo'",type:"dojo",status:"pendiente"},
+{id:"m2-15",q:"Q4",month:"Dic",text:"Consolidar registro sesiones Guild en Confluence/Notion",type:"entregable",status:"pendiente"}
+]},
+meta3:{title:"Innovación e IA Aplicada al CIS",weight:"20%",color:"#f59e0b",items:[
+{id:"m3-01",q:"Q1",month:"Feb",text:"Radar Tecnológico Q1: ≥4 tecnologías evaluadas",type:"radar",status:"pendiente"},
+{id:"m3-02",q:"Q1",month:"Mar",text:"Iniciativa IA #1: Documentar propuesta validador código frontend",type:"iniciativa",status:"pendiente"},
+{id:"m3-03",q:"Q1",month:"Mar",text:"Priorizar iniciativas que reduzcan FTEs o mejoren velocidad",type:"reunión",status:"pendiente"},
+{id:"m3-04",q:"Q2",month:"Abr",text:"Implementar Iniciativa IA #1 en producción",type:"iniciativa",status:"pendiente"},
+{id:"m3-05",q:"Q2",month:"May",text:"Radar Tecnológico Q2: ≥4 tecnologías + resultados pilotos",type:"radar",status:"pendiente"},
+{id:"m3-06",q:"Q2",month:"Jun",text:"Medir impacto Iniciativa #1: horas, errores, velocidad",type:"medición",status:"pendiente"},
+{id:"m3-07",q:"Q2",month:"Jun",text:"Iniciativa IA #2: Documentar propuesta automatización documentación",type:"iniciativa",status:"pendiente"},
+{id:"m3-08",q:"Q3",month:"Ago",text:"Radar Tecnológico Q3: ≥4 tecnologías",type:"radar",status:"pendiente"},
+{id:"m3-09",q:"Q3",month:"Sep",text:"Implementar Iniciativa IA #2 en producción",type:"iniciativa",status:"pendiente"},
+{id:"m3-10",q:"Q3",month:"Sep",text:"Medir impacto Iniciativa #2",type:"medición",status:"pendiente"},
+{id:"m3-11",q:"Q4",month:"Nov",text:"Radar Tecnológico Q4: balance anual",type:"radar",status:"pendiente"},
+{id:"m3-12",q:"Q4",month:"Nov",text:"Iniciativa IA #3 (cap 120%): tercera automatización",type:"iniciativa",status:"pendiente"},
+{id:"m3-13",q:"Q4",month:"Dic",text:"Informe final innovación",type:"entregable",status:"pendiente"}
+]},
+meta4:{title:"Estándares de Calidad y Seguridad",weight:"20%",color:"#ef4444",items:[
+{id:"m4-01",q:"Q1",month:"Feb",text:"Guía #1: 'Arquitectura APIs Frontend' — REST/GraphQL, errores, tipado",type:"guía",status:"pendiente"},
+{id:"m4-02",q:"Q1",month:"Mar",text:"Configurar SonarQube + checklist OWASP como gate de merge",type:"entregable",status:"pendiente"},
+{id:"m4-03",q:"Q1",month:"Mar",text:"Sesión adopción con Seniors: validar Guía #1",type:"reunión",status:"pendiente"},
+{id:"m4-04",q:"Q1",month:"Mar",text:"Verificar: 0 vulnerabilidades críticas al cierre Q1",type:"medición",status:"pendiente"},
+{id:"m4-05",q:"Q2",month:"May",text:"Guía #2: 'Testing Seguro Frontend' — XSS, CSP, secure headers",type:"guía",status:"pendiente"},
+{id:"m4-06",q:"Q2",month:"May",text:"Checklist seguridad como gate de cierre en tu tren",type:"entregable",status:"pendiente"},
+{id:"m4-07",q:"Q2",month:"Jun",text:"Sesión adopción Seniors: Guía #2",type:"reunión",status:"pendiente"},
+{id:"m4-08",q:"Q2",month:"Jun",text:"Verificar: 0 vulnerabilidades críticas al cierre Q2",type:"medición",status:"pendiente"},
+{id:"m4-09",q:"Q3",month:"Ago",text:"Auditoría interna seguridad: revisión técnica 2h por tren",type:"entregable",status:"pendiente"},
+{id:"m4-10",q:"Q3",month:"Sep",text:"Verificar: 0 vulnerabilidades críticas al cierre Q3",type:"medición",status:"pendiente"},
+{id:"m4-11",q:"Q3",month:"Sep",text:"(Cap 120%) Automatizar escaneo seguridad pre-commit",type:"entregable",status:"pendiente"},
+{id:"m4-12",q:"Q4",month:"Oct",text:"Guía #3: 'Estándar Componentes Reutilizables CIS'",type:"guía",status:"pendiente"},
+{id:"m4-13",q:"Q4",month:"Dic",text:"Verificar: 0 vulnerabilidades críticas al cierre Q4",type:"medición",status:"pendiente"},
+{id:"m4-14",q:"Q4",month:"Dic",text:"Consolidar evidencia: guías, SonarQube, gate OWASP, auditoría",type:"entregable",status:"pendiente"}
+]},
+meta5:{title:"Desarrollo de Talento Senior y Junior",weight:"20%",color:"#8b5cf6",items:[
+{id:"m5-01",q:"Q1",month:"Feb",text:"Evaluación 1:1 semestral #1 con cada Senior (≥3)",type:"reunión",status:"pendiente"},
+{id:"m5-02",q:"Q1",month:"Feb",text:"Diseñar plan crecimiento con cada Senior",type:"entregable",status:"pendiente"},
+{id:"m5-03",q:"Q1",month:"Mar",text:"Identificar High Performers — ruta clara para cada uno",type:"entregable",status:"pendiente"},
+{id:"m5-04",q:"Q1",month:"Mar",text:"Coordinar preparación Juniors para Arenacoders (≥2, 3 meses anticipación)",type:"reunión",status:"pendiente"},
+{id:"m5-05",q:"Q2",month:"Abr",text:"Seguimiento mensual Juniors candidatos Arenacoders",type:"reunión",status:"pendiente"},
+{id:"m5-06",q:"Q2",month:"May",text:"Encuesta NPS interna #1",type:"medición",status:"pendiente"},
+{id:"m5-07",q:"Q2",month:"Jun",text:"Documentar evolución técnica semestral ≥3 Seniors",type:"entregable",status:"pendiente"},
+{id:"m5-08",q:"Q3",month:"Jul",text:"Ronda #1 Arenacoders: ≥1 Junior presenta",type:"arenacoders",status:"pendiente"},
+{id:"m5-09",q:"Q3",month:"Jul",text:"Feedback 1:1 post-Arenacoders",type:"reunión",status:"pendiente"},
+{id:"m5-10",q:"Q3",month:"Ago",text:"Evaluación 1:1 semestral #2 con cada Senior",type:"reunión",status:"pendiente"},
+{id:"m5-11",q:"Q4",month:"Oct",text:"Ronda #2 Arenacoders: ≥1 Junior adicional",type:"arenacoders",status:"pendiente"},
+{id:"m5-12",q:"Q4",month:"Oct",text:"Feedback 1:1 post-Arenacoders ronda 2",type:"reunión",status:"pendiente"},
+{id:"m5-13",q:"Q4",month:"Nov",text:"Encuesta NPS interna #2 — target ≥8/10",type:"medición",status:"pendiente"},
+{id:"m5-14",q:"Q4",month:"Nov",text:"(Cap 110%) Preparar 3° Junior Arenacoders",type:"arenacoders",status:"pendiente"},
+{id:"m5-15",q:"Q4",month:"Dic",text:"Consolidar: Arenacoders, NPS, evaluaciones, High Performers",type:"entregable",status:"pendiente"}
+]},
+formacion:{title:"Formación Personal del Mentor",weight:"Transversal",color:"#64748b",items:[
+{id:"f-01",q:"Q1",month:"Feb-Abr",text:"Foco 1 — Arquitecto Frontend Moderno: documentar React, patrones, monorepo",type:"formación",status:"pendiente"},
+{id:"f-02",q:"Q2",month:"May-Jul",text:"Foco 2 — Herramienta validadora de código con IA",type:"formación",status:"pendiente"},
+{id:"f-03",q:"Q3",month:"Ago-Nov",text:"Foco 3 — Visión Fullstack: backend Java/Spring Boot",type:"formación",status:"pendiente"},
+{id:"f-04",q:"Q2",month:"Jun-Dic",text:"Certificación Meta Front-End Developer Professional — 6h/semana",type:"certificación",status:"pendiente"},
+{id:"f-05",q:"Q3",month:"Ago-Feb27",text:"Certificación Google UX Design Professional — 7h/semana",type:"certificación",status:"pendiente"},
+{id:"f-06",q:"Q1",month:"Todo el año",text:"Liderazgo empático y comunicación efectiva",type:"formación",status:"pendiente"}
+]}
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let data = null, view = "timeline", fMeta = "all", fQ = "all", fSt = "all";
+let lastSaved = "", currentUser = null, saveTimeout = null, unsubFirestore = null;
+
+// ============================================================
+// FIREBASE SYNC
+// ============================================================
+function getDocRef() {
+  if (!currentUser) return null;
+  return db.collection("mentor-plan").doc(currentUser.uid);
+}
+
+async function loadFromFirestore() {
+  const ref = getDocRef();
+  if (!ref) return;
+  try {
+    const doc = await ref.get();
+    if (doc.exists) {
+      data = doc.data().plan;
+    } else {
+      data = JSON.parse(JSON.stringify(INIT));
+      await ref.set({ plan: data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+  } catch (e) {
+    console.error("Load error:", e);
+    data = JSON.parse(JSON.stringify(INIT));
+  }
+}
+
+function listenToFirestore() {
+  const ref = getDocRef();
+  if (!ref) return;
+  if (unsubFirestore) unsubFirestore();
+  unsubFirestore = ref.onSnapshot(doc => {
+    if (doc.exists && doc.metadata.hasPendingWrites === false) {
+      data = doc.data().plan;
+      render();
+      showToast("📥 Sincronizado desde otro dispositivo");
+    }
+  });
+}
+
+function saveToFirestore() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async () => {
+    const ref = getDocRef();
+    if (!ref || !data) return;
+    try {
+      await ref.set({ plan: data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      lastSaved = new Date().toLocaleTimeString();
+      updateSaveIndicator();
+      showToast("✅ Guardado");
+    } catch (e) {
+      console.error("Save error:", e);
+      showToast("⚠️ Error al guardar");
+    }
+  }, 800);
+}
+
+function showToast(msg) {
+  const el = document.getElementById("sync-toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function updateSaveIndicator() {
+  const el = document.getElementById("save-ind");
+  if (el) el.textContent = lastSaved ? "Guardado: " + lastSaved : "";
+  const dot = document.getElementById("save-dot");
+  if (dot) dot.style.background = "#10b981";
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+auth.onAuthStateChanged(async user => {
+  currentUser = user;
+  if (user) {
+    await loadFromFirestore();
+    listenToFirestore();
+    render();
+  } else {
+    data = null;
+    if (unsubFirestore) { unsubFirestore(); unsubFirestore = null; }
+    renderLogin();
+  }
+});
+
+function signIn() {
+  auth.signInWithPopup(provider).catch(e => {
+    console.error("Auth error:", e);
+    alert("Error de autenticación: " + e.message);
+  });
+}
+
+function signOut() {
+  auth.signOut();
+}
+
+// ============================================================
+// LOGIC
+// ============================================================
+function toggle(mk, id) {
+  const item = data[mk].items.find(i => i.id === id);
+  if (item) {
+    const idx = STATUSES.indexOf(item.status);
+    item.status = STATUSES[(idx + 1) % 3];
+    saveToFirestore();
+    render();
+  }
+}
+
+function resetAll() {
+  if (confirm("¿Reiniciar todo el progreso? No se puede deshacer.")) {
+    data = JSON.parse(JSON.stringify(INIT));
+    saveToFirestore();
+    render();
+  }
+}
+
+function matchQ(iq, fq) {
+  if (fq === "all") return true;
+  if (iq === fq || iq === "ALL") return true;
+  if (iq.includes("-")) return iq.split("-").some(q => q === fq);
+  return false;
+}
+
+function getAllItems() {
+  return Object.entries(data).flatMap(([k, v]) => v.items.map(i => ({ ...i, mk: k, mt: v.title, mc: v.color })));
+}
+
+// ============================================================
+// RENDER HELPERS
+// ============================================================
+function el(tag, attrs, ...ch) {
+  const e = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+    if (k === "style" && typeof v === "object") Object.assign(e.style, v);
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === "class") e.className = v;
+    else e.setAttribute(k, v);
+  });
+  ch.flat().forEach(c => { if (c != null) e.append(typeof c === "string" ? document.createTextNode(c) : c); });
+  return e;
+}
+
+function renderLogin() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  const screen = el("div", { class: "login-screen" });
+  const card = el("div", { class: "login-card" });
+  card.append(
+    el("div", { class: "emoji" }, "🎯"),
+    el("h1", null, "Plan Mentor Frontend 2026"),
+    el("p", null, "Juan Camilo Naranjo Marín · CIS Protección\nInicia sesión para sincronizar tu progreso en todos tus dispositivos."),
+    el("button", { class: "btn-google", onClick: signIn },
+      el("svg", { viewBox: "0 0 24 24" }),
+      "Iniciar con Google"
+    )
+  );
+  // Google icon
+  const svg = card.querySelector("svg");
+  svg.innerHTML = '<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>';
+  screen.append(card);
+  app.append(screen);
+}
+
+function renderItem(item, compact) {
+  const row = el("div", { class: "item", style: { borderLeft: `4px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
+  const chk = el("div", { class: "chk", style: { borderColor: SC[item.status], background: item.status === "completado" ? "#10b981" : item.status === "en progreso" ? "#fef3c7" : "#fff" } });
+  chk.textContent = item.status === "completado" ? "✓" : item.status === "en progreso" ? "⏳" : "";
+  const body = el("div", { class: "item-body" });
+  const txt = el("div", { class: "item-text", style: { textDecoration: item.status === "completado" ? "line-through" : "none", color: item.status === "completado" ? "#94a3b8" : "#1e293b" } });
+  txt.textContent = (TE[item.type] || "📌") + " " + item.text;
+  const meta = el("div", { class: "item-meta" });
+  if (!compact) {
+    const tag = el("span", { class: "tag", style: { background: item.mc + "20", color: item.mc, marginRight: "6px" } });
+    tag.textContent = item.mt.substring(0, 30);
+    meta.append(tag);
+  }
+  meta.append(document.createTextNode(item.month + " "));
+  const stag = el("span", { class: "tag", style: { marginLeft: "8px", background: SC[item.status] + "30", color: SC[item.status] } });
+  stag.textContent = SL[item.status];
+  meta.append(stag);
+  body.append(txt, meta);
+  row.append(chk, body);
+  return row;
+}
+
+// ============================================================
+// MAIN RENDER
+// ============================================================
+function render() {
+  if (!data || !currentUser) return;
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  const container = el("div", { class: "app-container" });
+
+  // User bar
+  const ub = el("div", { class: "user-bar" });
+  const ui = el("div", { class: "user-info" });
+  if (currentUser.photoURL) ui.append(el("img", { class: "user-avatar", src: currentUser.photoURL, referrerpolicy: "no-referrer" }));
+  ui.append(document.createTextNode(currentUser.displayName || currentUser.email));
+  ub.append(ui, el("button", { class: "btn-logout", onClick: signOut }, "Cerrar sesión"));
+  container.append(ub);
+
+  const all = getAllItems();
+  const stats = { t: all.length, c: all.filter(i => i.status === "completado").length, p: all.filter(i => i.status === "en progreso").length, pe: all.filter(i => i.status === "pendiente").length };
+  const pct = stats.t ? Math.round(stats.c / stats.t * 100) : 0;
+
+  // Header
+  const hdr = el("div", { class: "header" });
+  const hTop = el("div", { class: "header-top" });
+  hTop.append(
+    el("div", null, el("h1", null, "Plan Mentor Frontend 2026"), el("p", null, "Juan Camilo Naranjo Marín · CIS Protección · Líder Guild Frontend")),
+    el("div", { class: "save-indicator" }, el("span", { id: "save-ind" }, lastSaved ? "Guardado: " + lastSaved : ""), el("span", { id: "save-dot", class: "save-dot", style: { background: "#10b981" } }))
+  );
+  hdr.append(hTop);
+
+  const sr = el("div", { class: "stats-row" });
+  [[pct + "%", "Progreso total", "#fff"], [stats.c, "Completados", "#10b981"], [stats.p, "En progreso", "#f59e0b"], [stats.pe, "Pendientes", "#94a3b8"]].forEach(([n, l, c]) => {
+    sr.append(el("div", { class: "stat-box" }, el("div", { class: "stat-num", style: { color: c } }, String(n)), el("div", { class: "stat-label" }, l)));
+  });
+  hdr.append(sr);
+  const pbg = el("div", { class: "progress-bg" });
+  pbg.append(el("div", { class: "progress-fill", style: { width: pct + "%" } }));
+  hdr.append(pbg);
+  container.append(hdr);
+
+  // Meta cards
+  const mg = el("div", { class: "meta-grid" });
+  Object.entries(data).forEach(([k, v]) => {
+    const t = v.items.length, c = v.items.filter(i => i.status === "completado").length, p = t ? Math.round(c / t * 100) : 0;
+    const card = el("div", { class: "meta-card" + (fMeta === k ? " active" : ""), style: { borderLeft: `4px solid ${v.color}`, "--mc": v.color }, onClick: () => { fMeta = fMeta === k ? "all" : k; render(); } });
+    card.append(el("div", { class: "meta-weight", style: { color: v.color } }, v.weight), el("div", { class: "meta-title" }, v.title));
+    const mb = el("div", { class: "mini-bg" });
+    mb.append(el("div", { class: "mini-fill", style: { background: v.color, width: p + "%" } }));
+    card.append(mb, el("div", { class: "meta-count" }, `${c}/${t} (${p}%)`));
+    mg.append(card);
+  });
+  container.append(mg);
+
+  // Controls
+  const ctrl = el("div", { class: "controls" });
+  [["timeline", "Cronológico"], ["kanban", "Kanban"], ["checklist", "Checklist"]].forEach(([v, l]) => {
+    ctrl.append(el("button", { class: "tab" + (view === v ? " on" : ""), onClick: () => { view = v; render(); } }, l));
+  });
+  ctrl.append(el("span", { class: "sep" }));
+  const selQ = el("select", { onChange: e => { fQ = e.target.value; render(); } });
+  [["all", "Todos los Q"], ["Q1", "Q1"], ["Q2", "Q2"], ["Q3", "Q3"], ["Q4", "Q4"]].forEach(([v, l]) => { const o = el("option", { value: v }, l); if (v === fQ) o.selected = true; selQ.append(o); });
+  ctrl.append(selQ);
+  const selS = el("select", { onChange: e => { fSt = e.target.value; render(); } });
+  [["all", "Todos"], ["pendiente", "Pendiente"], ["en progreso", "En progreso"], ["completado", "Completado"]].forEach(([v, l]) => { const o = el("option", { value: v }, l); if (v === fSt) o.selected = true; selS.append(o); });
+  ctrl.append(selS);
+  if (fMeta !== "all" || fQ !== "all" || fSt !== "all") ctrl.append(el("button", { class: "btn-clear", onClick: () => { fMeta = "all"; fQ = "all"; fSt = "all"; render(); } }, "Limpiar filtros"));
+  ctrl.append(el("button", { class: "btn-reset", onClick: resetAll }, "Reiniciar todo"));
+  container.append(ctrl);
+
+  const filtered = getAllItems().filter(i => (fMeta === "all" || i.mk === fMeta) && matchQ(i.q, fQ) && (fSt === "all" || i.status === fSt));
+
+  // Timeline
+  if (view === "timeline") {
+    ["Q1", "Q2", "Q3", "Q4"].filter(q => fQ === "all" || fQ === q).forEach(q => {
+      const qI = filtered.filter(i => matchQ(i.q, q)).sort((a, b) => MO.indexOf(a.month) - MO.indexOf(b.month));
+      if (!qI.length) return;
+      const sec = el("div", { style: { marginBottom: "20px" } });
+      sec.append(el("h3", { class: "q-head" }, q + " · " + (q === "Q1" ? "Ene–Mar" : q === "Q2" ? "Abr–Jun" : q === "Q3" ? "Jul–Sep" : "Oct–Dic") + " 2026"));
+      qI.forEach(i => sec.append(renderItem(i, false)));
+      container.append(sec);
+    });
+  }
+
+  // Kanban
+  if (view === "kanban") {
+    const kg = el("div", { class: "kanban" });
+    STATUSES.forEach(st => {
+      const col = el("div", { class: "kcol" });
+      const hd = el("div", { class: "kcol-head" });
+      const cnt = filtered.filter(i => i.status === st);
+      hd.append(el("div", { class: "kdot", style: { background: SC[st] } }), el("span", { style: { fontWeight: "700", fontSize: "14px" } }, SL[st]), el("span", { style: { fontSize: "12px", color: "#94a3b8", marginLeft: "auto" } }, String(cnt.length)));
+      col.append(hd);
+      cnt.forEach(item => {
+        const card = el("div", { class: "kcard", style: { borderLeft: `3px solid ${item.mc}` }, onClick: () => toggle(item.mk, item.id) });
+        card.append(
+          el("div", { class: "kanban-card-text", style: { fontSize: "12px", lineHeight: "1.4" } }, (TE[item.type] || "📌") + " " + (item.text.length > 90 ? item.text.substring(0, 90) + "..." : item.text)),
+          el("div", { style: { fontSize: "10px", color: "#94a3b8", marginTop: "4px" } },
+            el("span", { class: "tag", style: { background: item.mc + "20", color: item.mc } }, item.mt.substring(0, 25)),
+            " " + item.q + " · " + item.month
+          )
+        );
+        col.append(card);
+      });
+      kg.append(col);
+    });
+    container.append(kg);
+  }
+
+  // Checklist
+  if (view === "checklist") {
+    Object.entries(data).filter(([k]) => fMeta === "all" || fMeta === k).forEach(([mk, meta]) => {
+      const items = meta.items.filter(i => matchQ(i.q, fQ) && (fSt === "all" || i.status === fSt));
+      if (!items.length) return;
+      const done = items.filter(i => i.status === "completado").length;
+      const sec = el("div", { class: "cl-section" });
+      const hd = el("div", { class: "cl-head" });
+      hd.append(el("div", { class: "cl-bar", style: { background: meta.color } }), el("h3", { style: { fontSize: "15px", fontWeight: "700" } }, meta.title), el("span", { style: { fontSize: "12px", color: "#64748b", fontWeight: "600" } }, "(" + meta.weight + ")"), el("span", { style: { fontSize: "12px", color: "#10b981", marginLeft: "auto", fontWeight: "600" } }, done + "/" + items.length));
+      sec.append(hd);
+      items.forEach(i => sec.append(renderItem({ ...i, mk, mt: meta.title, mc: meta.color }, true)));
+      container.append(sec);
+    });
+  }
+
+  // Footer
+  container.append(el("div", { class: "footer" }, el("strong", null, "Sincronización multi-dispositivo activa. "), "Tus cambios se guardan en Firebase y se sincronizan en tiempo real en todos tus dispositivos. Haz clic en cualquier ítem para ciclar: Pendiente → En progreso → Completado."));
+  app.append(container);
+}
+</script>
+</body>
+</html>
