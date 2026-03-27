@@ -60,7 +60,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .sep{width:1px;height:20px;background:var(--border2);margin:0 4px}
 select{padding:5px 8px;border-radius:6px;border:1px solid var(--border2);font-size:13px;background:var(--bg2);color:var(--text)}
 .btn-clear{padding:5px 10px;border-radius:6px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;cursor:pointer;font-weight:600}
-.btn-reset{margin-left:auto;padding:5px 10px;border-radius:6px;border:1px solid #fca5a5;background:var(--bg2);color:#dc2626;font-size:11px;cursor:pointer;font-weight:600}
 .q-head{font-size:16px;font-weight:700;margin:0 0 10px;padding:6px 12px;background:var(--bg2);border-radius:6px;display:inline-block}
 .item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;transition:all .1s;cursor:pointer}
 .item:hover{background:var(--bg3)}
@@ -164,9 +163,11 @@ document.getElementById("themeToggle").addEventListener("click",()=>{darkMode=!d
 
 firebase.initializeApp({apiKey:"AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",authDomain:"plan-mentor-camilo-naranjo.firebaseapp.com",projectId:"plan-mentor-camilo-naranjo",storageBucket:"plan-mentor-camilo-naranjo.firebasestorage.app",messagingSenderId:"291479276112",appId:"1:291479276112:web:cfaf874d088697f0dedf55",measurementId:"G-WYVJ639RCS"});
 const db=firebase.firestore(),auth=firebase.auth(),provider=new firebase.auth.GoogleAuthProvider();
-db.enablePersistence({synchronizeTabs:true}).catch(x=>0);
+// Sin persistencia local — siempre carga del servidor
 
 const ADMIN_EMAIL="camilo2279@gmail.com",ADMIN_DOC="admin-plan",MENTEES_DOC="admin-mentees",NOTES_DOC="admin-general-notes";
+const MAX_BACKUPS=5;
+let backupInterval=null;
 const STATUSES=["pendiente","en progreso","completado"];
 const SC={pendiente:"#94a3b8","en progreso":"#f59e0b",completado:"#10b981"};
 const SL={pendiente:"Pendiente","en progreso":"En progreso",completado:"Completado"};
@@ -186,20 +187,37 @@ function getMRef(){return db.collection("mentor-plan").doc(MENTEES_DOC)}
 function getNRef(){return db.collection("mentor-plan").doc(NOTES_DOC)}
 
 async function loadFS(){
-  try{const d=await getDocRef().get();if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}))}else if(isAdmin){data=JSON.parse(JSON.stringify(INIT));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else data=JSON.parse(JSON.stringify(INIT))}catch(x){data=JSON.parse(JSON.stringify(INIT))}
-  try{const d=await getMRef().get();if(d.exists)mentees=d.data().list||[];else if(isAdmin){mentees=[];await getMRef().set({list:[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else mentees=[]}catch(x){mentees=[]}
-  try{const d=await getNRef().get();if(d.exists)generalNotes=d.data().text||"";else if(isAdmin){generalNotes="";await getNRef().set({text:"",updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else generalNotes=""}catch(x){generalNotes=""}
+  try{const d=await getDocRef().get({source:"server"});if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}))}else if(isAdmin){data=JSON.parse(JSON.stringify(INIT));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else data=JSON.parse(JSON.stringify(INIT))}catch(x){try{const d=await getDocRef().get();if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}))}else data=JSON.parse(JSON.stringify(INIT))}catch(y){data=JSON.parse(JSON.stringify(INIT))}}
+  try{const d=await getMRef().get({source:"server"});if(d.exists)mentees=d.data().list||[];else if(isAdmin){mentees=[];await getMRef().set({list:[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else mentees=[]}catch(x){try{const d=await getMRef().get();if(d.exists)mentees=d.data().list||[];else mentees=[]}catch(y){mentees=[]}}
+  try{const d=await getNRef().get({source:"server"});if(d.exists)generalNotes=d.data().text||"";else if(isAdmin){generalNotes="";await getNRef().set({text:"",updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else generalNotes=""}catch(x){try{const d=await getNRef().get();if(d.exists)generalNotes=d.data().text||"";else generalNotes=""}catch(y){generalNotes=""}}
 }
 function listenFS(){
-  if(unsubF)unsubF();unsubF=getDocRef().onSnapshot(d=>{if(d.exists&&!d.metadata.hasPendingWrites){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));rv()}});
-  if(unsubM)unsubM();unsubM=getMRef().onSnapshot(d=>{if(d.exists&&!d.metadata.hasPendingWrites){mentees=d.data().list||[];rv()}});
-  if(unsubN)unsubN();unsubN=getNRef().onSnapshot(d=>{if(d.exists&&!d.metadata.hasPendingWrites){generalNotes=d.data().text||""}});
+  if(unsubF)unsubF();unsubF=getDocRef().onSnapshot(d=>{if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));rv()}});
+  if(unsubM)unsubM();unsubM=getMRef().onSnapshot(d=>{if(d.exists){mentees=d.data().list||[];rv()}});
+  if(unsubN)unsubN();unsubN=getNRef().onSnapshot(d=>{if(d.exists){generalNotes=d.data().text||""}});
 }
 function saveFS(){if(!isAdmin)return;if(saveTimeout)clearTimeout(saveTimeout);saveTimeout=setTimeout(async()=>{try{await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});lastSaved=new Date().toLocaleTimeString();const el=document.getElementById("save-ind");if(el)el.textContent="Guardado: "+lastSaved;showToast("✅ Guardado")}catch(x){showToast("⚠️ Error")}},800)}
 function saveM(){if(!isAdmin)return;if(saveMT)clearTimeout(saveMT);saveMT=setTimeout(async()=>{try{await getMRef().set({list:mentees,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("✅ Mentees guardados")}catch(x){showToast("⚠️ Error")}},600)}
 function saveGN(){if(!isAdmin)return;if(saveNT)clearTimeout(saveNT);saveNT=setTimeout(async()=>{try{await getNRef().set({text:generalNotes,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("✅ Apuntes guardados")}catch(x){showToast("⚠️ Error")}},800)}
 
-auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();rv()}else{data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}});
+// ===== AUTO BACKUP =====
+async function createBackup(){
+  if(!isAdmin||!data)return;
+  try{
+    const ts=new Date().toISOString();
+    const backupData={plan:data,mentees:mentees,generalNotes:generalNotes,timestamp:ts,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+    await db.collection("mentor-backups").doc(ts.replace(/[:.]/g,"-")).set(backupData);
+    // Limpiar backups viejos, mantener solo los últimos MAX_BACKUPS
+    const snaps=await db.collection("mentor-backups").orderBy("createdAt","desc").get();
+    if(snaps.size>MAX_BACKUPS){const batch=db.batch();let i=0;snaps.forEach(d=>{i++;if(i>MAX_BACKUPS)batch.delete(d.ref)});await batch.commit()}
+    console.log("Backup creado:",ts);
+  }catch(x){console.error("Backup error:",x)}
+}
+
+function startBackups(){if(backupInterval)clearInterval(backupInterval);createBackup();backupInterval=setInterval(createBackup,5*60*1000)}
+function stopBackups(){if(backupInterval){clearInterval(backupInterval);backupInterval=null}}
+
+auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}});
 function signIn(){auth.signInWithPopup(provider).catch(x=>alert("Error: "+x.message))}
 function signOut(){auth.signOut()}
 
@@ -292,6 +310,47 @@ function openGeneralNotes(){
   modal.append(body);ov.append(modal);root.append(ov);document.body.style.overflow="hidden";
 }
 
+// ===== BACKUP RESTORE MODAL =====
+async function openBackupsModal(){
+  const root=document.getElementById("modal-root");root.innerHTML="";
+  const ov=h("div",{class:"modal-overlay",onClick:ev=>{if(ev.target===ov)closeMenteeModal()}});
+  const modal=h("div",{class:"modal",style:{maxWidth:"600px"}});
+  const hdr=h("div",{class:"modal-header"});
+  hdr.append(h("div",{style:{fontSize:"24px",flexShrink:"0"}},"💾"),h("div",{class:"modal-title-area"},h("div",{class:"modal-title"},h("span",{class:"modal-title-text"},"Backups Automáticos")),h("div",{style:{fontSize:"13px",color:"var(--text3)",marginTop:"2px"}},"Se crean cada 5 minutos mientras tengas la app abierta como admin. Se conservan los últimos "+MAX_BACKUPS+".")),h("button",{class:"modal-close",onClick:closeMenteeModal},"×"));
+  modal.append(hdr);
+  const body=h("div",{class:"modal-body"});
+  body.append(h("div",{style:{padding:"16px",textAlign:"center",color:"var(--text4)"}},"Cargando backups..."));
+  modal.append(body);ov.append(modal);root.append(ov);document.body.style.overflow="hidden";
+  // Load backups
+  try{
+    const snaps=await db.collection("mentor-backups").orderBy("createdAt","desc").get();
+    body.innerHTML="";
+    if(snaps.empty){body.append(h("div",{style:{padding:"20px",textAlign:"center",color:"var(--text4)",fontSize:"14px"}},"No hay backups aún. Se creará uno en los próximos minutos."));return}
+    const btnNow=h("button",{class:"btn-add-mentee",style:{marginBottom:"16px",fontSize:"13px"},onClick:async()=>{await createBackup();closeMenteeModal();showToast("💾 Backup manual creado")}});btnNow.textContent="📸 Crear backup ahora";
+    body.append(btnNow);
+    snaps.forEach(doc=>{
+      const d=doc.data();const ts=d.timestamp?new Date(d.timestamp):new Date();
+      const formatted=ts.toLocaleDateString("es-CO",{weekday:"short",year:"numeric",month:"short",day:"numeric"})+" "+ts.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+      const planItems=d.plan?Object.values(d.plan).reduce((a,m)=>a+m.items.length,0):0;
+      const completados=d.plan?Object.values(d.plan).reduce((a,m)=>a+m.items.filter(i=>i.status==="completado").length,0):0;
+      const menteesCount=d.mentees?d.mentees.length:0;
+      const row=h("div",{style:{display:"flex",alignItems:"center",gap:"10px",padding:"10px 14px",background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:"8px",marginBottom:"6px"}});
+      const info=h("div",{style:{flex:"1"}});
+      info.append(h("div",{style:{fontSize:"14px",fontWeight:"600"}},"📅 "+formatted),h("div",{style:{fontSize:"12px",color:"var(--text4)",marginTop:"2px"}},planItems+" ítems · "+completados+" completados · "+menteesCount+" mentees"));
+      const btn=h("button",{class:"mentee-btn",style:{background:"#1e3a5f",color:"#fff",border:"none",padding:"6px 12px"},onClick:async()=>{
+        if(!confirm("¿Restaurar este backup del "+formatted+"?\n\nEsto reemplazará TODOS los datos actuales con los de este backup."))return;
+        try{
+          if(d.plan){data=d.plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+          if(d.mentees){mentees=d.mentees;await getMRef().set({list:mentees,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+          if(d.generalNotes!==undefined){generalNotes=d.generalNotes;await getNRef().set({text:generalNotes,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+          closeMenteeModal();rv();showToast("✅ Backup restaurado exitosamente");
+        }catch(x){showToast("⚠️ Error al restaurar")}
+      }});btn.textContent="Restaurar";
+      row.append(info,btn);body.append(row);
+    });
+  }catch(x){body.innerHTML="";body.append(h("div",{style:{padding:"20px",textAlign:"center",color:"#dc2626"}},"Error al cargar backups: "+x.message))}
+}
+
 // ===== MENTEES VIEW =====
 function renderMentees(){
   const app=document.getElementById("app");app.innerHTML="";const C=h("div",{class:"app-container"});C.append(renderUserBar());
@@ -346,7 +405,10 @@ function render(){
   mb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Mentees'+(mentees.length?" ("+mentees.length+")":"");
   const nb=h("button",{class:"btn-mentees",onClick:openGeneralNotes});
   nb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Apuntes';
-  hR.append(h("div",{style:{display:"flex",gap:"8px"}},mb,nb));if(isAdmin)hR.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{class:"save-dot",style:{background:"#10b981"}})));
+  const btnsRow=h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}});
+  btnsRow.append(mb,nb);
+  if(isAdmin){const bb=h("button",{class:"btn-mentees",onClick:openBackupsModal});bb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Backups';btnsRow.append(bb)}
+  hR.append(btnsRow);if(isAdmin)hR.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{class:"save-dot",style:{background:"#10b981"}})));
   hTop.append(hL,hR);hdr.append(hTop);
   const sr=h("div",{class:"stats-row"});[[pct+"%","Progreso total","#fff"],[stats.c,"Completados","#10b981"],[stats.p,"En progreso","#f59e0b"],[stats.pe,"Pendientes","#94a3b8"]].forEach(([n,l,c])=>sr.append(h("div",{class:"stat-box"},h("div",{class:"stat-num",style:{color:c}},String(n)),h("div",{class:"stat-label"},l))));hdr.append(sr);
   const pb=h("div",{class:"progress-bg"});pb.append(h("div",{class:"progress-fill",style:{width:pct+"%"}}));hdr.append(pb);C.append(hdr);
@@ -358,7 +420,6 @@ function render(){
   const sQ=h("select",{onChange:ev=>{fQ=ev.target.value;render()}});[["all","Todos los Q"],["Q1","Q1"],["Q2","Q2"],["Q3","Q3"],["Q4","Q4"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fQ)o.selected=true;sQ.append(o)});ctrl.append(sQ);
   const sS=h("select",{onChange:ev=>{fSt=ev.target.value;render()}});[["all","Todos"],["pendiente","Pendiente"],["en progreso","En progreso"],["completado","Completado"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fSt)o.selected=true;sS.append(o)});ctrl.append(sS);
   if(fMeta!=="all"||fQ!=="all"||fSt!=="all")ctrl.append(h("button",{class:"btn-clear",onClick:()=>{fMeta="all";fQ="all";fSt="all";render()}},"Limpiar"));
-  if(isAdmin)ctrl.append(h("button",{class:"btn-reset",onClick:()=>{if(confirm("¿Reiniciar todo?")){data=JSON.parse(JSON.stringify(INIT));saveFS();render()}}},"Reiniciar"));
   C.append(ctrl);
 
   const filtered=getAllItems().filter(i=>(fMeta==="all"||i.mk===fMeta)&&matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
