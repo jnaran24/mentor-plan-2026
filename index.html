@@ -243,6 +243,8 @@ function stopBackups(){if(backupInterval){clearInterval(backupInterval);backupIn
 function signIn(){auth.signInWithPopup(provider).catch(x=>alert("Error: "+x.message))}
 function signOut(){auth.signOut()}
 
+auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}});
+
 function findItem(mk,id){return data[mk].items.find(i=>i.id===id)}
 function setStatus(mk,id,st){if(!isAdmin){showToast("🔒 Solo lectura");return}const i=findItem(mk,id);if(i){i.status=st;saveFS();rv()}}
 function setNotes(mk,id,n){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.notes=n;saveFS()}}
