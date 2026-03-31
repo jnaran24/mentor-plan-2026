@@ -212,12 +212,12 @@ function getMRef(){return db.collection("mentor-plan").doc(MENTEES_DOC)}
 function getNRef(){return db.collection("mentor-plan").doc(NOTES_DOC)}
 
 async function loadFS(){
-  try{const d=await getDocRef().get({source:"server"});if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}))}else if(isAdmin){data=JSON.parse(JSON.stringify(INIT));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else data=JSON.parse(JSON.stringify(INIT))}catch(x){try{const d=await getDocRef().get();if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}))}else data=JSON.parse(JSON.stringify(INIT))}catch(y){data=JSON.parse(JSON.stringify(INIT))}}
+  try{const d=await getDocRef().get({source:"server"});if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes="";if(!i.label)i.label="ninguno"}))}else if(isAdmin){data=JSON.parse(JSON.stringify(INIT));await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else data=JSON.parse(JSON.stringify(INIT))}catch(x){try{const d=await getDocRef().get();if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes="";if(!i.label)i.label="ninguno"}))}else data=JSON.parse(JSON.stringify(INIT))}catch(y){data=JSON.parse(JSON.stringify(INIT))}}
   try{const d=await getMRef().get({source:"server"});if(d.exists)mentees=d.data().list||[];else if(isAdmin){mentees=[];await getMRef().set({list:[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else mentees=[]}catch(x){try{const d=await getMRef().get();if(d.exists)mentees=d.data().list||[];else mentees=[]}catch(y){mentees=[]}}
   try{const d=await getNRef().get({source:"server"});if(d.exists)generalNotes=d.data().text||"";else if(isAdmin){generalNotes="";await getNRef().set({text:"",updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}else generalNotes=""}catch(x){try{const d=await getNRef().get();if(d.exists)generalNotes=d.data().text||"";else generalNotes=""}catch(y){generalNotes=""}}
 }
 function listenFS(){
-  if(unsubF)unsubF();unsubF=getDocRef().onSnapshot(d=>{if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes=""}));rv()}});
+  if(unsubF)unsubF();unsubF=getDocRef().onSnapshot(d=>{if(d.exists){data=d.data().plan;Object.values(data).forEach(m=>m.items.forEach(i=>{if(i.notes===undefined)i.notes="";if(!i.label)i.label="ninguno"}));rv()}});
   if(unsubM)unsubM();unsubM=getMRef().onSnapshot(d=>{if(d.exists){mentees=d.data().list||[];rv()}});
   if(unsubN)unsubN();unsubN=getNRef().onSnapshot(d=>{if(d.exists){generalNotes=d.data().text||""}});
 }
