@@ -1,4 +1,4 @@
-// Sin migración automática - se ejecuta manualmente si se necesita
+// Sin migración automática
 auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}})<!DOCTYPE html>
 <html lang="es">
 <head>
