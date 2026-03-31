@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plan Mentor Frontend 2026 - Juan Camilo Naranjo</title>
+<title>Plan Desarrollo - Metas CIS - 2026 - Juan Camilo Naranjo</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -201,6 +201,9 @@ const INIT={meta1:{title:"Innovación, Agentes CIS y IA Estratégica",weight:"25
 
 let data=null,mentees=[],generalNotes="",view="timeline",fMeta="all",fQ="all",fSt="all";
 let lastSaved="",currentUser=null,saveTimeout=null,saveMT=null,saveNT=null,unsubF=null,unsubM=null,unsubN=null,isAdmin=false,dragItem=null,currentView="plan";
+let kanbanColumns=["pendiente","en progreso","completado"];
+let allColumns=["pendiente","en progreso","completado"];
+let addingCol=false;
 
 function h(tag,a,...ch){const el=document.createElement(tag);if(a)Object.entries(a).forEach(([k,v])=>{if(k==="style"&&typeof v==="object")Object.assign(el.style,v);else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==="class")el.className=v;else el.setAttribute(k,v)});ch.flat().forEach(c=>{if(c!=null)el.append(typeof c==="string"?document.createTextNode(c):c)});return el}
 function showToast(m){const t=document.getElementById("sync-toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
@@ -246,7 +249,7 @@ function signOut(){auth.signOut()}
 auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}});
 
 function findItem(mk,id){return data[mk].items.find(i=>i.id===id)}
-function setStatus(mk,id,st){if(!isAdmin){showToast("🔒 Solo lectura");return}const i=findItem(mk,id);if(i){i.status=st;saveFS();rv()}}
+function setStatus(mk,id,st){if(!isAdmin){showToast("🔒 Solo lectura");return}const i=findItem(mk,id);if(i){i.status=st;if(!allColumns.includes(st)){allColumns.push(st);if(!kanbanColumns.includes(st))kanbanColumns.push(st);SC[st]=SC[st]||"#6366f1";SL[st]=SL[st]||st}saveFS();rv()}}
 function setNotes(mk,id,n){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.notes=n;saveFS()}}
 function setTitle(mk,id,t){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.text=t;saveFS();rv()}}
 function setLabel(mk,id,l){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.label=l;saveFS()}}
@@ -270,7 +273,7 @@ function createTask(mk,text,q,month,type){
   saveFS();rv();
 }
 function matchQ(iq,fq){if(fq==="all")return true;if(iq===fq||iq==="ALL")return true;if(iq.includes("-"))return iq.split("-").some(q=>q===fq);return false}
-function getAllItems(){return Object.entries(data).flatMap(([k,v])=>v.items.map(i=>({...i,mk:k,mt:v.title,mc:v.color,mw:v.weight})))}
+function getAllItems(){return Object.entries(data).flatMap(([k,v])=>v.items.map(i=>{if(!i.label)i.label="ninguno";if(!i.notes)i.notes="";return{...i,mk:k,mt:v.title,mc:v.color,mw:v.weight}}))}
 
 function rv(){if(!data||!currentUser)return;if(currentView==="mentees")renderMentees();else render()}
 
@@ -311,7 +314,7 @@ function openTaskModal(mk,id){
 
   // Status
   const ss=h("div",{class:"modal-section"});ss.append(h("div",{class:"modal-section-label"},"Estado"));
-  if(isAdmin){const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(currentMk,id,ev.target.value);const s=modal.querySelector(".stl");if(s){s.textContent=SL[ev.target.value];s.style.background=SC[ev.target.value]+"25";s.style.color=SC[ev.target.value]}}});STATUSES.forEach(s=>{const o=h("option",{value:s},SL[s]);if(s===item.status)o.selected=true;sel.append(o)});ss.append(sel)}else ss.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:SC[item.status]+"15",color:SC[item.status],fontWeight:"600",fontSize:"14px"}},SL[item.status]));
+  if(isAdmin){const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(currentMk,id,ev.target.value);const s=modal.querySelector(".stl");if(s){s.textContent=SL[ev.target.value]||ev.target.value;s.style.background=(SC[ev.target.value]||"#6366f1")+"25";s.style.color=SC[ev.target.value]||"#6366f1"}}});allColumns.forEach(s=>{const o=h("option",{value:s},SL[s]||s);if(s===item.status)o.selected=true;sel.append(o)});ss.append(sel)}else ss.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:(SC[item.status]||"#6366f1")+"15",color:SC[item.status]||"#6366f1",fontWeight:"600",fontSize:"14px"}},SL[item.status]||item.status));
   body.append(ss);
 
   // Label
