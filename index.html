@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+// Sin migración automática - se ejecuta manualmente si se necesita
+auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}})<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -146,6 +147,25 @@ select{padding:5px 8px;border-radius:6px;border:1px solid var(--border2);font-si
 .back-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);font-size:13px;color:var(--text3);cursor:pointer;margin-bottom:16px}
 .back-btn:hover{background:var(--bg3);color:var(--text)}
 .mentee-notes-full{min-height:200px}
+.label-tag{padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-left:6px}
+.label-corto{background:#dcfce7;color:#16a34a}
+.label-mediano{background:#fef3c7;color:#b45309}
+.label-largo{background:#fce7f3;color:#be185d}
+.btn-create-task{padding:6px 14px;border-radius:6px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-create-task:hover{background:#4f46e5}
+.btn-delete-task{padding:6px 14px;border-radius:6px;border:1px solid #fca5a5;background:var(--bg2);color:#dc2626;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-delete-task:hover{background:#fee2e2}
+.confirm-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:950;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .15s}
+.confirm-box{background:var(--bg2);border-radius:12px;padding:24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .2s}
+.confirm-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text3);line-height:1.5;margin-bottom:20px}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.confirm-cancel{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);font-size:14px;font-weight:600;cursor:pointer}
+.confirm-cancel:hover{background:var(--bg3)}
+.confirm-delete{padding:8px 16px;border-radius:8px;border:none;background:#dc2626;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.confirm-delete:hover{background:#b91c1c}
+.modal-category-select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg2);color:var(--text);cursor:pointer}
+.modal-category-select:focus{outline:none;border-color:var(--input-focus);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 @media(max-width:700px){.kanban{grid-template-columns:1fr}.stats-row{gap:10px}.stat-box{min-width:70px;padding:8px 10px}.stat-num{font-size:22px}.login-card{padding:32px 24px}.modal{max-width:95vw}.mentee-add-row{flex-direction:column}}
 </style>
 </head>
@@ -174,6 +194,9 @@ const SL={pendiente:"Pendiente","en progreso":"En progreso",completado:"Completa
 const TE={entregable:"📄","reunión":"🤝",piloto:"🚀","guild-ia":"🤖",guild:"🎓",dojo:"💻","medición":"📊",radar:"📡",iniciativa:"💡","guía":"📘",arenacoders:"🏆","formación":"📚","certificación":"🎖️"};
 const MO=["Ene","Feb","Feb-Abr","Mar","Abr","May","May-Jul","Jun","Jun-Dic","Jul","Ago","Ago-Nov","Ago-Feb27","Sep","Oct","Nov","Dic","Todo el año"];
 const QL={Q1:"Ene–Mar 2026",Q2:"Abr–Jun 2026",Q3:"Jul–Sep 2026",Q4:"Oct–Dic 2026",ALL:"Todo el año"};
+const LABELS=["ninguno","corto","mediano","largo"];
+const LABEL_NAMES={ninguno:"",corto:"Corto plazo",mediano:"Mediano plazo",largo:"Largo plazo"};
+const LABEL_CSS={corto:"label-corto",mediano:"label-mediano",largo:"label-largo"};
 
 const INIT={meta1:{title:"Innovación, Agentes CIS y IA Estratégica",weight:"25%",color:"#6366f1",items:[{id:"m1-01",q:"Q1",month:"Feb",text:"Definir el backlog de evolución del agente CIS de tu LAB (Frontend) para 2026 — mínimo 2 mejoras",type:"entregable",status:"pendiente",notes:""},{id:"m1-02",q:"Q1",month:"Feb",text:"Poner en producción el agente CIS de tu LAB y que ≥2 miembros lo usen activamente",type:"piloto",status:"pendiente",notes:""},{id:"m1-03",q:"Q1",month:"Mar",text:"Reporte trimestral de evolución del agente: ¿qué tan bien funciona? ¿quién lo usa? ¿qué mejoró?",type:"medición",status:"pendiente",notes:""},{id:"m1-04",q:"Q1",month:"Mar",text:"Radar Tecnológico Q1: evaluar ≥4 tecnologías. Publicar con categorías Adoptar/Probar/Evaluar/Descartar",type:"radar",status:"pendiente",notes:""},{id:"m1-05",q:"Q2",month:"Abr",text:"Iniciativa IA #1: Documentar propuesta (problema → solución de IA → resultado medible) con impacto en FTEs o lead time",type:"iniciativa",status:"pendiente",notes:""},{id:"m1-06",q:"Q2",month:"May",text:"Implementar Iniciativa IA #1 en producción con impacto medible: FTEs ahorrados, tiempo o costo",type:"iniciativa",status:"pendiente",notes:""},{id:"m1-07",q:"Q2",month:"Jun",text:"Iniciativa IA #2: Documentar e implementar segunda iniciativa con caso de negocio cuantificado",type:"iniciativa",status:"pendiente",notes:""},{id:"m1-08",q:"Q2",month:"Jun",text:"Reporte trimestral de evolución del agente Q2",type:"medición",status:"pendiente",notes:""},{id:"m1-09",q:"Q2",month:"Jun",text:"Radar Tecnológico Q2: ≥4 tecnologías evaluadas",type:"radar",status:"pendiente",notes:""},{id:"m1-10",q:"Q3",month:"Jul",text:"Garantizar ≥80% del equipo de tu Guild usa activamente el agente CIS con reporte de métricas de uso",type:"medición",status:"pendiente",notes:""},{id:"m1-11",q:"Q3",month:"Ago",text:"Sesión de LAB mensual con caso real de reducción de lead time usando el agente",type:"guild-ia",status:"pendiente",notes:""},{id:"m1-12",q:"Q3",month:"Sep",text:"Reporte trimestral de evolución del agente Q3",type:"medición",status:"pendiente",notes:""},{id:"m1-13",q:"Q3",month:"Sep",text:"Radar Tecnológico Q3: ≥4 tecnologías evaluadas",type:"radar",status:"pendiente",notes:""},{id:"m1-14",q:"Q4",month:"Oct",text:"Verificar que el agente CIS de tu LAB tenga ≥2X miembros activos",type:"medición",status:"pendiente",notes:""},{id:"m1-15",q:"Q4",month:"Nov",text:"Reporte trimestral de evolución del agente Q4 + balance anual",type:"medición",status:"pendiente",notes:""},{id:"m1-16",q:"Q4",month:"Nov",text:"Radar Tecnológico Q4: balance anual con todas las tecnologías evaluadas",type:"radar",status:"pendiente",notes:""},{id:"m1-17",q:"Q4",month:"Dic",text:"(Cap 120%) Superar 2 iniciativas en producción Y agente con ≥1 nueva capacidad documentada en el año",type:"iniciativa",status:"pendiente",notes:""},{id:"m1-18",q:"Q4",month:"Dic",text:"Informe final: evidencia de iniciativas en producción, agente en uso, Radar completo, métricas de impacto",type:"entregable",status:"pendiente",notes:""}]},meta2:{title:"Estándares de Calidad, Seguridad y Pipeline AI",weight:"20%",color:"#ef4444",items:[{id:"m4-01",q:"Q1",month:"Feb",text:"Guía #1: 'Estándar de uso de agentes CIS en el flujo de desarrollo' — cuándo y cómo usar cada agente por rol",type:"guía",status:"pendiente",notes:""},{id:"m4-02",q:"Q1",month:"Mar",text:"Coordinar con los 4 Mentores para publicar el 'Estándar de Flujo AI-First CIS' como guía oficial",type:"reunión",status:"pendiente",notes:""},{id:"m4-03",q:"Q1",month:"Mar",text:"Configurar el Security Agent como gate en el pipeline CI/SAST de todos los repos activos del CIS",type:"entregable",status:"pendiente",notes:""},{id:"m4-04",q:"Q1",month:"Mar",text:"Verificar: 0 vulnerabilidades críticas sin resolver al cierre Q1",type:"medición",status:"pendiente",notes:""},{id:"m4-05",q:"Q2",month:"May",text:"Guía #2: definir y publicar segundo estándar técnico (ej: testing seguro, arquitectura APIs, o seguridad frontend)",type:"guía",status:"pendiente",notes:""},{id:"m4-06",q:"Q2",month:"May",text:"Facilitar sesiones de adopción con Seniors antes de publicar cualquier estándar nuevo",type:"reunión",status:"pendiente",notes:""},{id:"m4-07",q:"Q2",month:"Jun",text:"Verificar: pipeline CI/SAST con Security Agent implementado como gate en ≥80% de repos del CIS",type:"medición",status:"pendiente",notes:""},{id:"m4-08",q:"Q2",month:"Jun",text:"Verificar: 0 vulnerabilidades críticas sin resolver al cierre Q2",type:"medición",status:"pendiente",notes:""},{id:"m4-09",q:"Q3",month:"Ago",text:"Auditoría interna de seguridad: revisión técnica con reporte documentado",type:"entregable",status:"pendiente",notes:""},{id:"m4-10",q:"Q3",month:"Sep",text:"Verificar: 0 vulnerabilidades críticas sin resolver al cierre Q3",type:"medición",status:"pendiente",notes:""},{id:"m4-11",q:"Q4",month:"Oct",text:"Verificar adopción: ≥1 estándar de uso de agentes CIS adoptado en el flujo",type:"medición",status:"pendiente",notes:""},{id:"m4-12",q:"Q4",month:"Dic",text:"Verificar: 0 vulnerabilidades críticas sin resolver al cierre Q4",type:"medición",status:"pendiente",notes:""},{id:"m4-13",q:"Q4",month:"Dic",text:"(Cap 120%) Automatizar el Security Agent como gate pre-commit para todos los devs del CIS",type:"entregable",status:"pendiente",notes:""},{id:"m4-14",q:"Q4",month:"Dic",text:"Consolidar evidencia: guías publicadas, pipeline Security Agent, auditoría, 0 vulnerabilidades",type:"entregable",status:"pendiente",notes:""}]},meta3:{title:"Desarrollo de Talento con Ruta IA por Rol",weight:"20%",color:"#8b5cf6",items:[{id:"m5-01",q:"Q1",month:"Feb",text:"Evaluación 1:1 semestral #1 con cada Senior (≥3): ¿qué aprendió? ¿qué sigue? ¿qué obstáculos tiene?",type:"reunión",status:"pendiente",notes:""},{id:"m5-02",q:"Q1",month:"Feb",text:"Diseñar con cada Senior su plan de crecimiento hacia el próximo nivel: Mentor, Arquitecto o Especialista",type:"entregable",status:"pendiente",notes:""},{id:"m5-03",q:"Q1",month:"Mar",text:"Identificar High Performers entre Juniors y Seniors — documentar ruta clara de crecimiento",type:"entregable",status:"pendiente",notes:""},{id:"m5-04",q:"Q1",month:"Mar",text:"Coordinar preparación Juniors para Arenacoders (≥2 target) — al menos 3 meses de anticipación",type:"reunión",status:"pendiente",notes:""},{id:"m5-05",q:"Q2",month:"Abr",text:"Coordinar con los 4 Mentores para definir conjuntamente la Ruta de Habilidades IA por Rol",type:"reunión",status:"pendiente",notes:""},{id:"m5-06",q:"Q2",month:"May",text:"Publicar la Ruta de Habilidades IA por Rol con nivel esperado y criterios de verificación",type:"entregable",status:"pendiente",notes:""},{id:"m5-07",q:"Q2",month:"May",text:"Encuesta NPS interna #1: satisfacción, crecimiento percibido, orgullo de pertenencia — target ≥8/10",type:"medición",status:"pendiente",notes:""},{id:"m5-08",q:"Q2",month:"Jun",text:"Documentar evolución técnica semestral de ≥3 Seniors",type:"entregable",status:"pendiente",notes:""},{id:"m5-09",q:"Q3",month:"Jul",text:"Ronda #1 Arenacoders: ≥1 Junior presenta (evaluación 360 + reto técnico + entrevista técnica)",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-10",q:"Q3",month:"Jul",text:"Feedback 1:1 post-Arenacoders: resultado en 3 componentes, ruta clara si no aprueba",type:"reunión",status:"pendiente",notes:""},{id:"m5-11",q:"Q3",month:"Ago",text:"Evaluación 1:1 semestral #2 con cada Senior: actualizar plan + revisar avance en ruta IA",type:"reunión",status:"pendiente",notes:""},{id:"m5-12",q:"Q3",month:"Sep",text:"Verificar: ≥80% del equipo completando el nivel IA asignado en la ruta",type:"medición",status:"pendiente",notes:""},{id:"m5-13",q:"Q4",month:"Oct",text:"Ronda #2 Arenacoders: ≥1 Junior adicional presenta",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-14",q:"Q4",month:"Oct",text:"Feedback 1:1 post-Arenacoders ronda 2",type:"reunión",status:"pendiente",notes:""},{id:"m5-15",q:"Q4",month:"Nov",text:"Encuesta NPS interna #2 — target ≥8/10",type:"medición",status:"pendiente",notes:""},{id:"m5-16",q:"Q4",month:"Nov",text:"(Cap 110%) ≥3 Juniors aprueban el Arenacoders",type:"arenacoders",status:"pendiente",notes:""},{id:"m5-17",q:"Q4",month:"Dic",text:"(Cap 120%) ≥80% del CIS completa su ruta IA asignada",type:"medición",status:"pendiente",notes:""},{id:"m5-18",q:"Q4",month:"Dic",text:"Consolidar: Arenacoders, NPS, evaluaciones semestrales, ruta IA, High Performers",type:"entregable",status:"pendiente",notes:""}]},meta4:{title:"Adopción de IA en el Equipo CIS (North Star Metric)",weight:"20%",color:"#10b981",items:[{id:"m2-01",q:"Q1",month:"Feb",text:"Establecer el baseline del lead time del CIS — este número es tu termómetro",type:"entregable",status:"pendiente",notes:""},{id:"m2-02",q:"Q1",month:"Feb",text:"Definir con cada Senior qué agente CIS adoptará su célula y cómo medirán el impacto",type:"reunión",status:"pendiente",notes:""},{id:"m2-03",q:"Q1",month:"Mar",text:"Garantizar ≥80% del equipo usa activamente los agentes CIS de su Guild con evidencia documentada",type:"medición",status:"pendiente",notes:""},{id:"m2-04",q:"Q2",month:"Abr",text:"Reportar lead time mensual al equipo — debe ser visible para todos",type:"medición",status:"pendiente",notes:""},{id:"m2-05",q:"Q2",month:"May",text:"Facilitar el LAB de IA mensual con caso real de reducción de lead time",type:"guild-ia",status:"pendiente",notes:""},{id:"m2-06",q:"Q2",month:"Jun",text:"Verificar ≥3 pilotos de IA en producción liderados o habilitados por el Mentor con impacto medible",type:"medición",status:"pendiente",notes:""},{id:"m2-07",q:"Q3",month:"Jul",text:"Sesión de LAB con artefacto producido — Guild de IA activa con ≥4 sesiones en el año",type:"guild-ia",status:"pendiente",notes:""},{id:"m2-08",q:"Q3",month:"Ago",text:"Verificar lead time ↓20% vs baseline 2025 — medido mensualmente en tablero de productividad",type:"medición",status:"pendiente",notes:""},{id:"m2-09",q:"Q3",month:"Sep",text:"Sesión de LAB con artefacto producido",type:"guild-ia",status:"pendiente",notes:""},{id:"m2-10",q:"Q4",month:"Oct",text:"Reportar lead time mensual — verificar tendencia de reducción sostenida",type:"medición",status:"pendiente",notes:""},{id:"m2-11",q:"Q4",month:"Nov",text:"Sesión de LAB con artefacto producido",type:"guild-ia",status:"pendiente",notes:""},{id:"m2-12",q:"Q4",month:"Dic",text:"(Cap 120%) Lead time cae ≥30% (North Star Metric) Y ≥5 pilotos en producción",type:"medición",status:"pendiente",notes:""},{id:"m2-13",q:"Q4",month:"Dic",text:"Informe final: lead time mensual vs baseline, adopción de agentes, pilotos en producción, sesiones LAB",type:"entregable",status:"pendiente",notes:""}]},meta5:{title:"Guild, Transferencia y Repositorio de Aceleradores",weight:"15%",color:"#f59e0b",items:[{id:"m3-01",q:"Q1",month:"Ene",text:"Planificar calendario de LAB: ≥4 sesiones en el año, cada una con tema, artefacto esperado",type:"entregable",status:"pendiente",notes:""},{id:"m3-02",q:"Q1",month:"Feb",text:"LAB #1: sesión con artefacto producido (guía, estándar, PoC o ADR) — publicar en repositorio CIS",type:"guild",status:"pendiente",notes:""},{id:"m3-03",q:"Q1",month:"Mar",text:"Dojo #1: Live coding 1h — código en vivo, aprendizaje en contexto real",type:"dojo",status:"pendiente",notes:""},{id:"m3-04",q:"Q2",month:"Abr",text:"Definir formato del acelerador: prompt validado, ADR (con contexto), patrón (con código)",type:"entregable",status:"pendiente",notes:""},{id:"m3-05",q:"Q2",month:"May",text:"Publicar ≥1 acelerador en el repositorio CIS con ownership documentado: quién lo mantiene, cuándo fue validado",type:"entregable",status:"pendiente",notes:""},{id:"m3-06",q:"Q2",month:"Jun",text:"LAB #2: sesión con artefacto producido — publicar en repositorio",type:"guild",status:"pendiente",notes:""},{id:"m3-07",q:"Q2",month:"Jun",text:"Dojo #2: Live coding 1h — caso real de célula",type:"dojo",status:"pendiente",notes:""},{id:"m3-08",q:"Q3",month:"Jul",text:"Coordinar con equipo de arquitectura: ¿cuál API del open core puede el CIS entregar este año?",type:"reunión",status:"pendiente",notes:""},{id:"m3-09",q:"Q3",month:"Ago",text:"LAB #3: sesión con artefacto producido",type:"guild",status:"pendiente",notes:""},{id:"m3-10",q:"Q3",month:"Sep",text:"Habilitar ≥1 API del open core entregada o habilitada",type:"entregable",status:"pendiente",notes:""},{id:"m3-11",q:"Q3",month:"Sep",text:"Espacio de aprendizaje: Taller para Juniors con experimento IA (aunque falle = aprendizaje documentado)",type:"dojo",status:"pendiente",notes:""},{id:"m3-12",q:"Q4",month:"Oct",text:"LAB #4: sesión con artefacto producido",type:"guild",status:"pendiente",notes:""},{id:"m3-13",q:"Q4",month:"Nov",text:"(Cap 120%) ≥6 sesiones de LAB con artefactos Y ≥2 aceleradores en el repositorio",type:"guild",status:"pendiente",notes:""},{id:"m3-14",q:"Q4",month:"Dic",text:"Consolidar: repositorio de aceleradores CIS, registro de sesiones LAB, evidencia de API en open core",type:"entregable",status:"pendiente",notes:""}]},formacion:{title:"Formación Personal del Mentor",weight:"Transversal",color:"#64748b",items:[{id:"f-01",q:"Q1",month:"Feb-Abr",text:"Foco 1 — Arquitecto Frontend Moderno: documentar React, patrones, monorepo",type:"formación",status:"pendiente",notes:""},{id:"f-02",q:"Q2",month:"May-Jul",text:"Foco 2 — Herramienta validadora de código con IA / Agente CIS de tu LAB",type:"formación",status:"pendiente",notes:""},{id:"f-03",q:"Q3",month:"Ago-Nov",text:"Foco 3 — Visión Fullstack: backend Java/Spring Boot",type:"formación",status:"pendiente",notes:""},{id:"f-04",q:"Q2",month:"Jun-Dic",text:"Certificación Meta Front-End Developer Professional — 6h/semana",type:"certificación",status:"pendiente",notes:""},{id:"f-05",q:"Q3",month:"Ago-Feb27",text:"Certificación Google UX Design Professional — 7h/semana",type:"certificación",status:"pendiente",notes:""},{id:"f-06",q:"Q1",month:"Todo el año",text:"Liderazgo empático y comunicación efectiva",type:"formación",status:"pendiente",notes:""}]}};
 
@@ -217,62 +240,7 @@ async function createBackup(){
 function startBackups(){if(backupInterval)clearInterval(backupInterval);createBackup();backupInterval=setInterval(createBackup,5*60*1000)}
 function stopBackups(){if(backupInterval){clearInterval(backupInterval);backupInterval=null}}
 
-auth.onAuthStateChanged(async u=>{currentUser=u;if(u){isAdmin=u.email===ADMIN_EMAIL;await loadFS();if(isAdmin)await migrateToV2();listenFS();if(isAdmin)startBackups();rv()}else{stopBackups();data=null;isAdmin=false;mentees=[];generalNotes="";if(unsubF){unsubF();unsubF=null}if(unsubM){unsubM();unsubM=null}if(unsubN){unsubN();unsubN=null}renderLogin()}})
-
-// ===== MIGRATION V2 =====
-async function migrateToV2(){
-  if(!data||!isAdmin)return;
-  let changed=false;
-  // Map old meta keys to new structure
-  const RENAME_MAP={
-    meta1:{newTitle:"Innovación, Agentes CIS y IA Estratégica",newWeight:"25%"},
-    meta2:{newTitle:"Estándares de Calidad, Seguridad y Pipeline AI",newWeight:"20%"},
-    meta3:{newTitle:"Desarrollo de Talento con Ruta IA por Rol",newWeight:"20%"},
-    meta4:{newTitle:"Adopción de IA en el Equipo CIS (North Star Metric)",newWeight:"20%"},
-    meta5:{newTitle:"Guild, Transferencia y Repositorio de Aceleradores",newWeight:"15%"},
-    formacion:{newTitle:"Formación Personal del Mentor",newWeight:"Transversal"}
-  };
-  // Old names to new meta key mapping (in case keys stayed but names are old)
-  const OLD_NAMES={
-    "Adopción de IA en el Equipo CIS":"meta1",
-    "Liderazgo Guild Frontend y Transferencia":"meta2",
-    "Innovación e IA Aplicada al CIS":"meta3",
-    "Estándares de Calidad y Seguridad":"meta4",
-    "Desarrollo de Talento Senior y Junior":"meta5",
-  };
-  // Step 1: Rename categories regardless of item status
-  Object.entries(data).forEach(([k,v])=>{
-    const rm=RENAME_MAP[k];
-    if(rm&&(v.title!==rm.newTitle||v.weight!==rm.newWeight)){
-      v.title=rm.newTitle;v.weight=rm.newWeight;changed=true;
-    }
-  });
-  // Also update colors to match new scheme
-  const COLOR_MAP={meta1:"#6366f1",meta2:"#ef4444",meta3:"#8b5cf6",meta4:"#10b981",meta5:"#f59e0b",formacion:"#64748b"};
-  Object.entries(data).forEach(([k,v])=>{if(COLOR_MAP[k]&&v.color!==COLOR_MAP[k]){v.color=COLOR_MAP[k];changed=true}});
-
-  // Step 2: For each meta, replace ONLY "pendiente" items with new INIT items
-  Object.entries(INIT).forEach(([mk,initMeta])=>{
-    if(!data[mk])return;
-    const existing=data[mk].items;
-    // Keep items that are "en progreso" or "completado" (user already modified these)
-    const kept=existing.filter(i=>i.status!=="pendiente");
-    // Get new pendiente items from INIT
-    const newPendiente=initMeta.items.filter(i=>i.status==="pendiente");
-    // Merge: kept items first, then new pendiente items (avoid duplicates by id)
-    const keptIds=new Set(kept.map(i=>i.id));
-    const merged=[...kept,...newPendiente.filter(i=>!keptIds.has(i.id))];
-    if(JSON.stringify(existing)!==JSON.stringify(merged)){
-      data[mk].items=merged;changed=true;
-    }
-  });
-
-  if(changed){
-    await createBackup();// Backup before migration
-    await getDocRef().set({plan:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    console.log("Migration V2 completed");showToast("🔄 Plan actualizado a nuevas metas V2");
-  }
-};
+// Sin migración automática - se ejecuta manualmente si se necesita;
 function signIn(){auth.signInWithPopup(provider).catch(x=>alert("Error: "+x.message))}
 function signOut(){auth.signOut()}
 
@@ -280,6 +248,26 @@ function findItem(mk,id){return data[mk].items.find(i=>i.id===id)}
 function setStatus(mk,id,st){if(!isAdmin){showToast("🔒 Solo lectura");return}const i=findItem(mk,id);if(i){i.status=st;saveFS();rv()}}
 function setNotes(mk,id,n){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.notes=n;saveFS()}}
 function setTitle(mk,id,t){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.text=t;saveFS();rv()}}
+function setLabel(mk,id,l){if(!isAdmin)return;const i=findItem(mk,id);if(i){i.label=l;saveFS()}}
+function moveToCategory(oldMk,id,newMk){
+  if(!isAdmin||oldMk===newMk)return;
+  const idx=data[oldMk].items.findIndex(i=>i.id===id);
+  if(idx===-1)return;
+  const item=data[oldMk].items.splice(idx,1)[0];
+  data[newMk].items.push(item);
+  saveFS();rv();
+}
+function deleteTask(mk,id){
+  if(!isAdmin)return;
+  data[mk].items=data[mk].items.filter(i=>i.id!==id);
+  saveFS();rv();
+}
+function createTask(mk,text,q,month,type){
+  if(!isAdmin||!text.trim())return;
+  const id="t-"+Date.now();
+  data[mk].items.push({id,q,month,text:text.trim(),type,status:"pendiente",notes:"",label:"ninguno"});
+  saveFS();rv();
+}
 function matchQ(iq,fq){if(fq==="all")return true;if(iq===fq||iq==="ALL")return true;if(iq.includes("-"))return iq.split("-").some(q=>q===fq);return false}
 function getAllItems(){return Object.entries(data).flatMap(([k,v])=>v.items.map(i=>({...i,mk:k,mt:v.title,mc:v.color,mw:v.weight})))}
 
@@ -288,24 +276,56 @@ function rv(){if(!data||!currentUser)return;if(currentView==="mentees")renderMen
 // ===== TASK MODAL =====
 function openTaskModal(mk,id){
   const item=findItem(mk,id);if(!item)return;const meta=data[mk];
+  if(!item.label)item.label="ninguno";
   const root=document.getElementById("modal-root");root.innerHTML="";
   const ov=h("div",{class:"modal-overlay",onClick:ev=>{if(ev.target===ov)closeModal()}});
   const modal=h("div",{class:"modal"});
   const hdr=h("div",{class:"modal-header"});
   const ta=h("div",{class:"modal-title-area"});
+  let currentMk=mk;
   function tvw(){ta.innerHTML="";const row=h("div",{class:"modal-title"});row.append(h("span",null,(TE[item.type]||"📌")+" "),h("span",{class:"modal-title-text"},item.text));if(isAdmin){const b=h("button",{class:"btn-edit-title",title:"Editar título",onClick:ev=>{ev.stopPropagation();ted()}});b.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';row.append(b)}ta.append(row)}
-  function ted(){ta.innerHTML="";const inp=h("input",{class:"modal-title-input",value:item.text});inp.addEventListener("keydown",ev=>{if(ev.key==="Enter"){setTitle(mk,id,inp.value);tvw()}if(ev.key==="Escape")tvw()});const r=h("div",{style:{display:"flex",gap:"6px",marginTop:"8px"}});r.append(h("button",{class:"btn-add-mentee",style:{fontSize:"12px",padding:"5px 14px"},onClick:()=>{setTitle(mk,id,inp.value);tvw()}},"Guardar"),h("button",{class:"mentee-edit-cancel",onClick:tvw},"Cancelar"));ta.append(inp,r);setTimeout(()=>inp.focus(),50)}
+  function ted(){ta.innerHTML="";const inp=h("input",{class:"modal-title-input",value:item.text});inp.addEventListener("keydown",ev=>{if(ev.key==="Enter"){setTitle(currentMk,id,inp.value);tvw()}if(ev.key==="Escape")tvw()});const r=h("div",{style:{display:"flex",gap:"6px",marginTop:"8px"}});r.append(h("button",{class:"btn-add-mentee",style:{fontSize:"12px",padding:"5px 14px"},onClick:()=>{setTitle(currentMk,id,inp.value);tvw()}},"Guardar"),h("button",{class:"mentee-edit-cancel",onClick:tvw},"Cancelar"));ta.append(inp,r);setTimeout(()=>inp.focus(),50)}
   tvw();
-  hdr.append(h("div",{class:"modal-color-bar",style:{background:meta.color}}),ta,h("button",{class:"modal-close",onClick:closeModal},"×"));modal.append(hdr);
+
+  // Header buttons: delete + close
+  const hdrBtns=h("div",{style:{display:"flex",alignItems:"flex-start",gap:"6px",flexShrink:"0"}});
+  if(isAdmin){hdrBtns.append(h("button",{class:"btn-delete-task",onClick:()=>showConfirmDelete(currentMk,id,item.text)},"🗑️ Eliminar"))}
+  hdrBtns.append(h("button",{class:"modal-close",onClick:closeModal},"×"));
+  hdr.append(h("div",{class:"modal-color-bar",style:{background:meta.color}}),ta,hdrBtns);modal.append(hdr);
+
   const body=h("div",{class:"modal-body"});
   const tags=h("div",{class:"modal-tags"});
-  tags.append(h("span",{class:"modal-tag",style:{background:meta.color+"20",color:meta.color}},meta.title),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},meta.weight),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},(TE[item.type]||"")+" "+item.type),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},item.q+(QL[item.q]?" · "+QL[item.q]:"")),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},"📅 "+item.month),h("span",{class:"modal-tag stl",style:{background:SC[item.status]+"25",color:SC[item.status]}},SL[item.status]));
+  tags.append(h("span",{class:"modal-tag",style:{background:meta.color+"20",color:meta.color}},meta.title),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},meta.weight),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},(TE[item.type]||"")+" "+item.type),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},item.q+(QL[item.q]?" · "+QL[item.q]:"")),h("span",{class:"modal-tag",style:{background:"var(--bg3)",color:"var(--text2)"}},"📅 "+item.month));
+  if(item.label&&item.label!=="ninguno")tags.append(h("span",{class:"modal-tag label-tag "+(LABEL_CSS[item.label]||"")},LABEL_NAMES[item.label]));
+  tags.append(h("span",{class:"modal-tag stl",style:{background:SC[item.status]+"25",color:SC[item.status]}},SL[item.status]));
   body.append(tags);
+
+  // Category select
+  if(isAdmin){
+    const catSec=h("div",{class:"modal-section"});catSec.append(h("div",{class:"modal-section-label"},"Categoría"));
+    const catSel=h("select",{class:"modal-category-select",onChange:ev=>{const newMk=ev.target.value;if(newMk!==currentMk){moveToCategory(currentMk,id,newMk);closeModal();showToast("📁 Tarea movida a "+data[newMk].title)}}});
+    Object.entries(data).forEach(([k,v])=>{const o=h("option",{value:k},v.title+" ("+v.weight+")");if(k===currentMk)o.selected=true;catSel.append(o)});
+    catSec.append(catSel);body.append(catSec);
+  }
+
+  // Status
   const ss=h("div",{class:"modal-section"});ss.append(h("div",{class:"modal-section-label"},"Estado"));
-  if(isAdmin){const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(mk,id,ev.target.value);const s=modal.querySelector(".stl");if(s){s.textContent=SL[ev.target.value];s.style.background=SC[ev.target.value]+"25";s.style.color=SC[ev.target.value]}}});STATUSES.forEach(s=>{const o=h("option",{value:s},SL[s]);if(s===item.status)o.selected=true;sel.append(o)});ss.append(sel)}else ss.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:SC[item.status]+"15",color:SC[item.status],fontWeight:"600",fontSize:"14px"}},SL[item.status]));
+  if(isAdmin){const sel=h("select",{class:"modal-status-select",onChange:ev=>{setStatus(currentMk,id,ev.target.value);const s=modal.querySelector(".stl");if(s){s.textContent=SL[ev.target.value];s.style.background=SC[ev.target.value]+"25";s.style.color=SC[ev.target.value]}}});STATUSES.forEach(s=>{const o=h("option",{value:s},SL[s]);if(s===item.status)o.selected=true;sel.append(o)});ss.append(sel)}else ss.append(h("div",{style:{padding:"10px 12px",borderRadius:"8px",background:SC[item.status]+"15",color:SC[item.status],fontWeight:"600",fontSize:"14px"}},SL[item.status]));
   body.append(ss);
+
+  // Label
+  if(isAdmin){
+    const labSec=h("div",{class:"modal-section"});labSec.append(h("div",{class:"modal-section-label"},"Label"));
+    const labSel=h("select",{class:"modal-category-select",onChange:ev=>{setLabel(currentMk,id,ev.target.value)}});
+    LABELS.forEach(l=>{const o=h("option",{value:l},l==="ninguno"?"Ninguno":LABEL_NAMES[l]);if(l===(item.label||"ninguno"))o.selected=true;labSel.append(o)});
+    labSec.append(labSel);body.append(labSec);
+  }else if(item.label&&item.label!=="ninguno"){
+    const labSec=h("div",{class:"modal-section"});labSec.append(h("div",{class:"modal-section-label"},"Label"),h("span",{class:"label-tag "+(LABEL_CSS[item.label]||""),style:{fontSize:"13px",padding:"4px 10px"}},LABEL_NAMES[item.label]));body.append(labSec);
+  }
+
+  // Notes
   const ns=h("div",{class:"modal-section"});ns.append(h("div",{class:"modal-section-label"},"Notas"));
-  if(isAdmin){const t=h("textarea",{class:"modal-notes",placeholder:"Agrega notas, enlaces, ideas..."});t.value=item.notes||"";let nt;t.addEventListener("input",()=>{clearTimeout(nt);nt=setTimeout(()=>setNotes(mk,id,t.value),600)});ns.append(t)}else ns.append(item.notes?h("div",{class:"modal-notes-readonly"},item.notes):h("div",{style:{color:"var(--text4)",fontSize:"13px",fontStyle:"italic"}},"Sin notas aún."));
+  if(isAdmin){const t=h("textarea",{class:"modal-notes",placeholder:"Agrega notas, enlaces, ideas..."});t.value=item.notes||"";let nt;t.addEventListener("input",()=>{clearTimeout(nt);nt=setTimeout(()=>setNotes(currentMk,id,t.value),600)});ns.append(t)}else ns.append(item.notes?h("div",{class:"modal-notes-readonly"},item.notes):h("div",{style:{color:"var(--text4)",fontSize:"13px",fontStyle:"italic"}},"Sin notas aún."));
   body.append(ns);modal.append(body);ov.append(modal);root.append(ov);document.body.style.overflow="hidden";
 }
 
@@ -350,6 +370,82 @@ function openMenteeModal(mid){
 }
 function closeMenteeModal(){document.getElementById("modal-root").innerHTML="";document.body.style.overflow=""}
 function closeModal(){document.getElementById("modal-root").innerHTML="";document.body.style.overflow="";rv()}
+
+// ===== CONFIRM DELETE =====
+function showConfirmDelete(mk,id,taskName){
+  const root=document.getElementById("modal-root");
+  // Append confirm on top of existing modal
+  const ov=h("div",{class:"confirm-overlay",onClick:ev=>{if(ev.target===ov)ov.remove()}});
+  const box=h("div",{class:"confirm-box"});
+  box.append(
+    h("div",{class:"confirm-title"},"⚠️ Confirmar eliminación"),
+    h("div",{class:"confirm-msg"},"¿Deseas realmente eliminar la tarea \""+taskName+"\"?\n\nEsta acción no se puede deshacer."),
+    h("div",{class:"confirm-actions"},
+      h("button",{class:"confirm-cancel",onClick:()=>ov.remove()},"Cancelar"),
+      h("button",{class:"confirm-delete",onClick:()=>{ov.remove();deleteTask(mk,id);closeModal();showToast("🗑️ Tarea eliminada")}},"Eliminar")
+    )
+  );
+  ov.append(box);root.append(ov);
+}
+
+// ===== CREATE TASK MODAL =====
+function openCreateTaskModal(){
+  const root=document.getElementById("modal-root");root.innerHTML="";
+  const ov=h("div",{class:"modal-overlay",onClick:ev=>{if(ev.target===ov)closeMenteeModal()}});
+  const modal=h("div",{class:"modal",style:{maxWidth:"560px"}});
+  const hdr=h("div",{class:"modal-header"});
+  hdr.append(h("div",{style:{fontSize:"24px",flexShrink:"0"}},"➕"),h("div",{class:"modal-title-area"},h("div",{class:"modal-title"},h("span",{class:"modal-title-text"},"Crear nueva tarea"))),h("button",{class:"modal-close",onClick:closeMenteeModal},"×"));
+  modal.append(hdr);
+  const body=h("div",{class:"modal-body"});
+
+  // Category
+  const catSec=h("div",{class:"modal-section"});catSec.append(h("div",{class:"modal-section-label"},"Categoría"));
+  const catSel=h("select",{class:"modal-category-select"});
+  Object.entries(data).forEach(([k,v])=>{catSel.append(h("option",{value:k},v.title+" ("+v.weight+")"))});
+  catSec.append(catSel);body.append(catSec);
+
+  // Title
+  const titSec=h("div",{class:"modal-section"});titSec.append(h("div",{class:"modal-section-label"},"Descripción de la tarea"));
+  const titInp=h("textarea",{class:"modal-notes",style:{minHeight:"80px"},placeholder:"Describe la tarea..."});
+  titSec.append(titInp);body.append(titSec);
+
+  // Q and Month
+  const timeSec=h("div",{class:"modal-section",style:{display:"flex",gap:"12px"}});
+  const qDiv=h("div",{style:{flex:"1"}});qDiv.append(h("div",{class:"modal-section-label"},"Trimestre"));
+  const qSel=h("select",{class:"modal-category-select"});
+  ["Q1","Q2","Q3","Q4"].forEach(q=>qSel.append(h("option",{value:q},q)));
+  qDiv.append(qSel);
+  const mDiv=h("div",{style:{flex:"1"}});mDiv.append(h("div",{class:"modal-section-label"},"Mes"));
+  const mSel=h("select",{class:"modal-category-select"});
+  ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"].forEach(m=>mSel.append(h("option",{value:m},m)));
+  mDiv.append(mSel);
+  timeSec.append(qDiv,mDiv);body.append(timeSec);
+
+  // Type
+  const typeSec=h("div",{class:"modal-section"});typeSec.append(h("div",{class:"modal-section-label"},"Tipo"));
+  const typeSel=h("select",{class:"modal-category-select"});
+  ["entregable","reunión","piloto","guild-ia","guild","dojo","medición","radar","iniciativa","guía","arenacoders","formación","certificación"].forEach(t=>typeSel.append(h("option",{value:t},(TE[t]||"📌")+" "+t)));
+  typeSec.append(typeSel);body.append(typeSec);
+
+  // Label
+  const labSec=h("div",{class:"modal-section"});labSec.append(h("div",{class:"modal-section-label"},"Label (opcional)"));
+  const labSel=h("select",{class:"modal-category-select"});
+  LABELS.forEach(l=>labSel.append(h("option",{value:l},l==="ninguno"?"Ninguno":LABEL_NAMES[l])));
+  labSec.append(labSel);body.append(labSec);
+
+  // Create button
+  const actSec=h("div",{class:"modal-section",style:{display:"flex",justifyContent:"flex-end"}});
+  actSec.append(h("button",{class:"btn-create-task",style:{padding:"10px 24px",fontSize:"15px"},onClick:()=>{
+    if(!titInp.value.trim()){showToast("⚠️ Escribe una descripción");return}
+    const newItem={id:"t-"+Date.now(),q:qSel.value,month:mSel.value,text:titInp.value.trim(),type:typeSel.value,status:"pendiente",notes:"",label:labSel.value};
+    data[catSel.value].items.push(newItem);
+    saveFS();closeMenteeModal();rv();showToast("✅ Tarea creada");
+  }},"Crear tarea"));
+  body.append(actSec);
+
+  modal.append(body);ov.append(modal);root.append(ov);document.body.style.overflow="hidden";
+  setTimeout(()=>titInp.focus(),100);
+}
 
 // ===== GENERAL NOTES MODAL =====
 function openGeneralNotes(){
@@ -447,7 +543,7 @@ function renderUserBar(){const ub=h("div",{class:"user-bar"});const ui=h("div",{
 
 function renderLogin(){const app=document.getElementById("app");app.innerHTML="";const s=h("div",{class:"login-screen"});const c=h("div",{class:"login-card"});const b=h("button",{class:"btn-google",onClick:signIn});const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 24 24");svg.setAttribute("width","20");svg.setAttribute("height","20");svg.innerHTML='<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>';b.append(svg,document.createTextNode("Iniciar con Google"));c.append(h("div",{class:"emoji"},"🎯"),h("h1",null,"Plan Mentor Frontend 2026"),h("p",null,"Juan Camilo Naranjo Marín · CIS Protección"),h("p",{style:{color:"var(--text4)",fontSize:"13px",marginBottom:"24px"}},"Inicia sesión para ver el plan."),b);s.append(c);app.append(s)}
 
-function renderItem(item,compact){const row=h("div",{class:"item",style:{borderLeft:`4px solid ${item.mc}`},onClick:()=>openTaskModal(item.mk,item.id)});const chk=h("div",{class:"chk",style:{borderColor:SC[item.status],background:item.status==="completado"?"#10b981":item.status==="en progreso"?"#fef3c7":"transparent"}});chk.textContent=item.status==="completado"?"✓":item.status==="en progreso"?"⏳":"";const bd=h("div",{class:"item-body"});const txt=h("div",{class:"item-text",style:{textDecoration:item.status==="completado"?"line-through":"none",color:item.status==="completado"?"var(--text4)":"var(--text)"}});txt.textContent=(TE[item.type]||"📌")+" "+item.text;if(item.notes)txt.append(h("span",{class:"note-dot",title:"Tiene notas"}));const meta=h("div",{class:"item-meta"});if(!compact){const tg=h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc,marginRight:"6px"}});tg.textContent=item.mt.substring(0,30);meta.append(tg)}meta.append(document.createTextNode(item.month+" "));const st=h("span",{class:"tag",style:{marginLeft:"8px",background:SC[item.status]+"30",color:SC[item.status]}});st.textContent=SL[item.status];meta.append(st);bd.append(txt,meta);row.append(chk,bd);return row}
+function renderItem(item,compact){const row=h("div",{class:"item",style:{borderLeft:`4px solid ${item.mc}`},onClick:()=>openTaskModal(item.mk,item.id)});const chk=h("div",{class:"chk",style:{borderColor:SC[item.status],background:item.status==="completado"?"#10b981":item.status==="en progreso"?"#fef3c7":"transparent"}});chk.textContent=item.status==="completado"?"✓":item.status==="en progreso"?"⏳":"";const bd=h("div",{class:"item-body"});const txt=h("div",{class:"item-text",style:{textDecoration:item.status==="completado"?"line-through":"none",color:item.status==="completado"?"var(--text4)":"var(--text)"}});txt.textContent=(TE[item.type]||"📌")+" "+item.text;if(item.notes)txt.append(h("span",{class:"note-dot",title:"Tiene notas"}));const meta=h("div",{class:"item-meta"});if(!compact){const tg=h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc,marginRight:"6px"}});tg.textContent=item.mt.substring(0,30);meta.append(tg)}meta.append(document.createTextNode(item.month+" "));const st=h("span",{class:"tag",style:{marginLeft:"8px",background:SC[item.status]+"30",color:SC[item.status]}});st.textContent=SL[item.status];meta.append(st);if(item.label&&item.label!=="ninguno"){const lb=h("span",{class:"label-tag "+(LABEL_CSS[item.label]||"")});lb.textContent=LABEL_NAMES[item.label];meta.append(lb)}bd.append(txt,meta);row.append(chk,bd);return row}
 
 // ===== MAIN RENDER =====
 function render(){
@@ -475,6 +571,7 @@ function render(){
   const sQ=h("select",{onChange:ev=>{fQ=ev.target.value;render()}});[["all","Todos los Q"],["Q1","Q1"],["Q2","Q2"],["Q3","Q3"],["Q4","Q4"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fQ)o.selected=true;sQ.append(o)});ctrl.append(sQ);
   const sS=h("select",{onChange:ev=>{fSt=ev.target.value;render()}});[["all","Todos"],["pendiente","Pendiente"],["en progreso","En progreso"],["completado","Completado"]].forEach(([v,l])=>{const o=h("option",{value:v},l);if(v===fSt)o.selected=true;sS.append(o)});ctrl.append(sS);
   if(fMeta!=="all"||fQ!=="all"||fSt!=="all")ctrl.append(h("button",{class:"btn-clear",onClick:()=>{fMeta="all";fQ="all";fSt="all";render()}},"Limpiar"));
+  if(isAdmin){ctrl.append(h("button",{class:"btn-create-task",onClick:openCreateTaskModal},"➕ Crear tarea"))}
   C.append(ctrl);
 
   const filtered=getAllItems().filter(i=>(fMeta==="all"||i.mk===fMeta)&&matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
