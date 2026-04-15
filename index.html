@@ -573,14 +573,18 @@ function getDateLabel(isoStr){
 }
 
 function renderSidebar(){
-  const sidebar=h("div",{class:"sidebar-updates"});
-  sidebar.append(h("div",{class:"sidebar-title"},"🕐 Últimas actualizaciones"));
+  const backdrop=h("div",{class:"sidebar-overlay-backdrop",onClick:()=>{sidebarOpen=false;closeSidebarPanel()}});
+  const panel=h("div",{class:"sidebar-overlay"});
+
+  const closeRow=h("div",{class:"sidebar-close"});
+  closeRow.append(h("div",{class:"sidebar-title",style:{margin:"0"}},"🕐 Últimas actualizaciones"),h("button",{class:"sidebar-close-btn",onClick:()=>{sidebarOpen=false;closeSidebarPanel()}},"✕ Cerrar"));
+  panel.append(closeRow);
 
   const allItems=getAllItems().filter(i=>i.updatedAt).sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
 
   if(!allItems.length){
-    sidebar.append(h("div",{class:"sidebar-empty"},"No hay actualizaciones recientes."));
-    return sidebar;
+    panel.append(h("div",{class:"sidebar-empty"},"No hay actualizaciones recientes."));
+    document.body.append(backdrop,panel);return;
   }
 
   let lastLabel="";
@@ -588,10 +592,10 @@ function renderSidebar(){
   allItems.slice(0,maxItems).forEach(item=>{
     const label=getDateLabel(item.updatedAt);
     if(label&&label!==lastLabel){
-      sidebar.append(h("div",{class:"sidebar-date-label"},label));
+      panel.append(h("div",{class:"sidebar-date-label"},label));
       lastLabel=label;
     }
-    const card=h("div",{class:"sidebar-card",style:{borderLeft:`3px solid ${item.mc}`},onClick:()=>openTaskModal(item.mk,item.id)});
+    const card=h("div",{class:"sidebar-card",style:{borderLeft:`3px solid ${item.mc}`},onClick:()=>{sidebarOpen=false;closeSidebarPanel();openTaskModal(item.mk,item.id)}});
     const txt=h("div",{class:"sidebar-card-text"});
     txt.textContent=(TE[item.type]||"📌")+" "+(item.text.length>70?item.text.substring(0,70)+"...":item.text);
     if(item.notes)txt.append(h("span",{class:"note-dot"}));
@@ -602,10 +606,20 @@ function renderSidebar(){
     const timeStr=new Date(item.updatedAt).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
     const timeEl=h("div",{class:"sidebar-card-time"},timeStr);
     card.append(txt,meta,timeEl);
-    sidebar.append(card);
+    panel.append(card);
   });
 
-  return sidebar;
+  document.body.append(backdrop,panel);
+}
+
+function closeSidebarPanel(){
+  document.querySelectorAll(".sidebar-overlay-backdrop,.sidebar-overlay").forEach(el=>el.remove());
+}
+
+function openSidebarPanel(){
+  closeSidebarPanel();
+  sidebarOpen=true;
+  renderSidebar();
 }
 
 // ===== SHARED =====
@@ -646,10 +660,7 @@ function render(){
 
   const filtered=getAllItems().filter(i=>(fMeta==="all"||i.mk===fMeta)&&matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
 
-  const mainLayout=h("div",{class:"main-layout"});
-  const mainContent=h("div",{class:"main-content"});
-
-  if(view==="timeline"){["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));if(!qI.length)return;const sec=h("div",{style:{marginBottom:"20px"}});sec.append(h("h3",{class:"q-head"},q+" · "+QL[q]));qI.forEach(i=>sec.append(renderItem(i,false)));mainContent.append(sec)})}
+  if(view==="timeline"){["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));if(!qI.length)return;const sec=h("div",{style:{marginBottom:"20px"}});sec.append(h("h3",{class:"q-head"},q+" · "+QL[q]));qI.forEach(i=>sec.append(renderItem(i,false)));C.append(sec)})}
 
   if(view==="kanban"){const kg=h("div",{class:"kanban"});STATUSES.forEach(st=>{const col=h("div",{class:"kcol"});col.addEventListener("dragover",ev=>{ev.preventDefault();col.classList.add("drag-over")});col.addEventListener("dragleave",()=>col.classList.remove("drag-over"));col.addEventListener("drop",ev=>{ev.preventDefault();col.classList.remove("drag-over");if(!isAdmin||!dragItem)return;setStatus(dragItem.mk,dragItem.id,st);dragItem=null});const hd=h("div",{class:"kcol-head"});const cnt=filtered.filter(i=>i.status===st);hd.append(h("div",{class:"kdot",style:{background:SC[st]}}),h("span",{style:{fontWeight:"700",fontSize:"14px"}},SL[st]),h("span",{style:{fontSize:"12px",color:"var(--text4)",marginLeft:"auto"}},String(cnt.length)));col.append(hd);cnt.forEach(item=>{const card=h("div",{class:"kcard",style:{borderLeft:`3px solid ${item.mc}`},draggable:isAdmin?"true":"false",onClick:()=>openTaskModal(item.mk,item.id)});if(isAdmin){card.addEventListener("dragstart",ev=>{dragItem={mk:item.mk,id:item.id};card.classList.add("dragging");ev.dataTransfer.effectAllowed="move"});card.addEventListener("dragend",()=>card.classList.remove("dragging"))}const txt=h("div",{style:{fontSize:"12px",lineHeight:"1.4"}});txt.textContent=(TE[item.type]||"📌")+" "+(item.text.length>90?item.text.substring(0,90)+"...":item.text);if(item.notes)txt.append(h("span",{class:"note-dot"}));const meta=h("div",{style:{fontSize:"10px",color:"var(--text4)",marginTop:"4px"}});meta.append(h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc}},item.mt.substring(0,25)),document.createTextNode(" "+item.q+" · "+item.month));card.append(txt,meta);col.append(card)});kg.append(col)});C.append(kg)}
 
