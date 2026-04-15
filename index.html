@@ -16,10 +16,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .app-container{max-width:1100px;margin:0 auto;padding:16px}
 .theme-toggle{position:fixed;top:12px;right:12px;z-index:999;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .theme-toggle:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.updates-toggle{position:fixed;top:60px;right:12px;z-index:999;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.updates-toggle:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.updates-toggle.active{background:#6366f1;border-color:#6366f1;color:#fff}
-.updates-toggle .badge-count{position:absolute;top:-4px;left:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a,#1e3a5f)}
 .login-card{background:var(--bg2);border-radius:16px;padding:48px 40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .login-card h1{font-size:24px;color:var(--text);margin-bottom:8px}
@@ -188,7 +184,6 @@ select{padding:5px 8px;border-radius:6px;border:1px solid var(--border2);font-si
 </head>
 <body>
 <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
-<div id="updates-panel" class="updates-panel"></div>
 <div id="app"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
 <div id="modal-root"></div>
 <div id="sync-toast" class="sync-toast"></div>
@@ -563,7 +558,7 @@ function renderMentees(){
   C.append(panel);app.append(C);
 }
 
-// ===== UPDATES PANEL =====
+// ===== SIDEBAR UPDATES =====
 function getDateLabel(isoStr){
   if(!isoStr)return null;
   const d=new Date(isoStr);
@@ -577,40 +572,23 @@ function getDateLabel(isoStr){
   return"Modificado hace "+diff+" días - "+dateStr;
 }
 
-function toggleUpdatesPanel(){
-  const panel=document.getElementById("updates-panel");
-  const btn=document.getElementById("updatesToggle");
-  if(sidebarOpen){
-    panel.classList.add("open");
-    btn.classList.add("active");
-    renderUpdatesPanel();
-  }else{
-    panel.classList.remove("open");
-    btn.classList.remove("active");
-  }
-}
-
-function renderUpdatesPanel(){
-  const panel=document.getElementById("updates-panel");
-  panel.innerHTML="";
-  if(!data)return;
-
-  const header=h("div",{class:"updates-panel-header"});
-  header.append(h("div",{class:"sidebar-title",style:{margin:"0"}},"🕐 Últimas actualizaciones"));
-  panel.append(header);
+function renderSidebar(){
+  const sidebar=h("div",{class:"sidebar-updates"});
+  sidebar.append(h("div",{class:"sidebar-title"},"🕐 Últimas actualizaciones"));
 
   const allItems=getAllItems().filter(i=>i.updatedAt).sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
 
   if(!allItems.length){
-    panel.append(h("div",{class:"sidebar-empty"},"No hay actualizaciones recientes."));
-    return;
+    sidebar.append(h("div",{class:"sidebar-empty"},"No hay actualizaciones recientes."));
+    return sidebar;
   }
 
   let lastLabel="";
-  allItems.slice(0,30).forEach(item=>{
+  const maxItems=30;
+  allItems.slice(0,maxItems).forEach(item=>{
     const label=getDateLabel(item.updatedAt);
     if(label&&label!==lastLabel){
-      panel.append(h("div",{class:"sidebar-date-label"},label));
+      sidebar.append(h("div",{class:"sidebar-date-label"},label));
       lastLabel=label;
     }
     const card=h("div",{class:"sidebar-card",style:{borderLeft:`3px solid ${item.mc}`},onClick:()=>openTaskModal(item.mk,item.id)});
@@ -622,9 +600,12 @@ function renderUpdatesPanel(){
     meta.append(h("span",{class:"tag",style:{background:(SC[item.status]||"#94a3b8")+"30",color:SC[item.status]||"#94a3b8",fontSize:"9px"}},SL[item.status]||item.status));
     if(item.label&&item.label!=="ninguno"){meta.append(h("span",{class:"tag "+(LABEL_CSS[item.label]||""),style:{fontSize:"9px"}},LABEL_NAMES[item.label]))}
     const timeStr=new Date(item.updatedAt).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
-    card.append(txt,meta,h("div",{class:"sidebar-card-time"},timeStr));
-    panel.append(card);
+    const timeEl=h("div",{class:"sidebar-card-time"},timeStr);
+    card.append(txt,meta,timeEl);
+    sidebar.append(card);
   });
+
+  return sidebar;
 }
 
 // ===== SHARED =====
@@ -648,9 +629,6 @@ function render(){
   const btnsRow=h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}});
   btnsRow.append(mb,nb);
   if(isAdmin){const bb=h("button",{class:"btn-mentees",onClick:openBackupsModal});bb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Backups';btnsRow.append(bb)}
-  const ubtn=h("button",{class:"btn-updates"+(sidebarOpen?" active":""),onClick:()=>{sidebarOpen=!sidebarOpen;toggleUpdatesPanel();render()}});
-  ubtn.innerHTML='🕐 Últimas Actualizaciones';
-  btnsRow.append(ubtn);
   hR.append(btnsRow);if(isAdmin)hR.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{class:"save-dot",style:{background:"#10b981"}})));
   hTop.append(hL,hR);hdr.append(hTop);
   const sr=h("div",{class:"stats-row"});[[pct+"%","Progreso total","#fff"],[stats.c,"Completados","#10b981"],[stats.p,"En progreso","#f59e0b"],[stats.pe,"Pendientes","#94a3b8"]].forEach(([n,l,c])=>sr.append(h("div",{class:"stat-box"},h("div",{class:"stat-num",style:{color:c}},String(n)),h("div",{class:"stat-label"},l))));hdr.append(sr);
@@ -668,7 +646,10 @@ function render(){
 
   const filtered=getAllItems().filter(i=>(fMeta==="all"||i.mk===fMeta)&&matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));
 
-  if(view==="timeline"){["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));if(!qI.length)return;const sec=h("div",{style:{marginBottom:"20px"}});sec.append(h("h3",{class:"q-head"},q+" · "+QL[q]));qI.forEach(i=>sec.append(renderItem(i,false)));C.append(sec)})}
+  const mainLayout=h("div",{class:"main-layout"});
+  const mainContent=h("div",{class:"main-content"});
+
+  if(view==="timeline"){["Q1","Q2","Q3","Q4"].filter(q=>fQ==="all"||fQ===q).forEach(q=>{const qI=filtered.filter(i=>matchQ(i.q,q)).sort((a,b)=>MO.indexOf(a.month)-MO.indexOf(b.month));if(!qI.length)return;const sec=h("div",{style:{marginBottom:"20px"}});sec.append(h("h3",{class:"q-head"},q+" · "+QL[q]));qI.forEach(i=>sec.append(renderItem(i,false)));mainContent.append(sec)})}
 
   if(view==="kanban"){const kg=h("div",{class:"kanban"});STATUSES.forEach(st=>{const col=h("div",{class:"kcol"});col.addEventListener("dragover",ev=>{ev.preventDefault();col.classList.add("drag-over")});col.addEventListener("dragleave",()=>col.classList.remove("drag-over"));col.addEventListener("drop",ev=>{ev.preventDefault();col.classList.remove("drag-over");if(!isAdmin||!dragItem)return;setStatus(dragItem.mk,dragItem.id,st);dragItem=null});const hd=h("div",{class:"kcol-head"});const cnt=filtered.filter(i=>i.status===st);hd.append(h("div",{class:"kdot",style:{background:SC[st]}}),h("span",{style:{fontWeight:"700",fontSize:"14px"}},SL[st]),h("span",{style:{fontSize:"12px",color:"var(--text4)",marginLeft:"auto"}},String(cnt.length)));col.append(hd);cnt.forEach(item=>{const card=h("div",{class:"kcard",style:{borderLeft:`3px solid ${item.mc}`},draggable:isAdmin?"true":"false",onClick:()=>openTaskModal(item.mk,item.id)});if(isAdmin){card.addEventListener("dragstart",ev=>{dragItem={mk:item.mk,id:item.id};card.classList.add("dragging");ev.dataTransfer.effectAllowed="move"});card.addEventListener("dragend",()=>card.classList.remove("dragging"))}const txt=h("div",{style:{fontSize:"12px",lineHeight:"1.4"}});txt.textContent=(TE[item.type]||"📌")+" "+(item.text.length>90?item.text.substring(0,90)+"...":item.text);if(item.notes)txt.append(h("span",{class:"note-dot"}));const meta=h("div",{style:{fontSize:"10px",color:"var(--text4)",marginTop:"4px"}});meta.append(h("span",{class:"tag",style:{background:item.mc+"20",color:item.mc}},item.mt.substring(0,25)),document.createTextNode(" "+item.q+" · "+item.month));card.append(txt,meta);col.append(card)});kg.append(col)});C.append(kg)}
 
