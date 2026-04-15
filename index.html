@@ -184,6 +184,7 @@ select{padding:5px 8px;border-radius:6px;border:1px solid var(--border2);font-si
 </head>
 <body>
 <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
+<button class="sidebar-toggle" id="sidebarToggle" title="Ver actualizaciones">🕐</button>
 <div id="app"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
 <div id="modal-root"></div>
 <div id="sync-toast" class="sync-toast"></div>
@@ -193,6 +194,7 @@ let darkMode=localStorage.getItem("mentor-dark")==="true";
 function applyTheme(){document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");document.getElementById("themeToggle").textContent=darkMode?"☀️":"🌙"}
 applyTheme();
 document.getElementById("themeToggle").addEventListener("click",()=>{darkMode=!darkMode;localStorage.setItem("mentor-dark",darkMode);applyTheme()});
+document.getElementById("sidebarToggle").addEventListener("click",openSidebarPanel);
 
 firebase.initializeApp({apiKey:"AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",authDomain:"plan-mentor-camilo-naranjo.firebaseapp.com",projectId:"plan-mentor-camilo-naranjo",storageBucket:"plan-mentor-camilo-naranjo.firebasestorage.app",messagingSenderId:"291479276112",appId:"1:291479276112:web:cfaf874d088697f0dedf55",measurementId:"G-WYVJ639RCS"});
 const db=firebase.firestore(),auth=firebase.auth(),provider=new firebase.auth.GoogleAuthProvider();
