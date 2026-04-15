@@ -188,7 +188,6 @@ select{padding:5px 8px;border-radius:6px;border:1px solid var(--border2);font-si
 </head>
 <body>
 <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
-<button class="updates-toggle" id="updatesToggle" title="Últimas actualizaciones">🕐</button>
 <div id="updates-panel" class="updates-panel"></div>
 <div id="app"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
 <div id="modal-root"></div>
@@ -199,7 +198,6 @@ let darkMode=localStorage.getItem("mentor-dark")==="true";
 function applyTheme(){document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");document.getElementById("themeToggle").textContent=darkMode?"☀️":"🌙"}
 applyTheme();
 document.getElementById("themeToggle").addEventListener("click",()=>{darkMode=!darkMode;localStorage.setItem("mentor-dark",darkMode);applyTheme()});
-document.getElementById("updatesToggle").addEventListener("click",()=>{sidebarOpen=!sidebarOpen;toggleUpdatesPanel()});
 
 firebase.initializeApp({apiKey:"AIzaSyAzZl3gPunTt12PBquG_7j2lAPShtVV81A",authDomain:"plan-mentor-camilo-naranjo.firebaseapp.com",projectId:"plan-mentor-camilo-naranjo",storageBucket:"plan-mentor-camilo-naranjo.firebasestorage.app",messagingSenderId:"291479276112",appId:"1:291479276112:web:cfaf874d088697f0dedf55",measurementId:"G-WYVJ639RCS"});
 const db=firebase.firestore(),auth=firebase.auth(),provider=new firebase.auth.GoogleAuthProvider();
@@ -629,16 +627,6 @@ function renderUpdatesPanel(){
   });
 }
 
-function updateBadgeCount(){
-  if(!data)return;
-  const btn=document.getElementById("updatesToggle");
-  if(!btn)return;
-  const count=getAllItems().filter(i=>i.updatedAt).length;
-  btn.innerHTML="🕐";
-  if(count>0){const bdg=document.createElement("span");bdg.className="badge-count";bdg.textContent=String(Math.min(count,99));btn.append(bdg)}
-  if(sidebarOpen)renderUpdatesPanel();
-}
-
 // ===== SHARED =====
 function renderUserBar(){const ub=h("div",{class:"user-bar"});const ui=h("div",{class:"user-info"});if(currentUser.photoURL)ui.append(h("img",{class:"user-avatar",src:currentUser.photoURL,referrerpolicy:"no-referrer"}));ui.append(document.createTextNode(currentUser.displayName||currentUser.email));ub.append(ui,h("span",{class:isAdmin?"badge-admin":"badge-readonly"},isAdmin?"Admin":"Solo lectura"),h("button",{class:"btn-logout",onClick:signOut},"Cerrar sesión"));return ub}
 
@@ -660,6 +648,9 @@ function render(){
   const btnsRow=h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}});
   btnsRow.append(mb,nb);
   if(isAdmin){const bb=h("button",{class:"btn-mentees",onClick:openBackupsModal});bb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Backups';btnsRow.append(bb)}
+  const ubtn=h("button",{class:"btn-updates"+(sidebarOpen?" active":""),onClick:()=>{sidebarOpen=!sidebarOpen;toggleUpdatesPanel();render()}});
+  ubtn.innerHTML='🕐 Últimas Actualizaciones';
+  btnsRow.append(ubtn);
   hR.append(btnsRow);if(isAdmin)hR.append(h("div",{class:"save-indicator"},h("span",{id:"save-ind"},lastSaved?"Guardado: "+lastSaved:""),h("span",{class:"save-dot",style:{background:"#10b981"}})));
   hTop.append(hL,hR);hdr.append(hTop);
   const sr=h("div",{class:"stats-row"});[[pct+"%","Progreso total","#fff"],[stats.c,"Completados","#10b981"],[stats.p,"En progreso","#f59e0b"],[stats.pe,"Pendientes","#94a3b8"]].forEach(([n,l,c])=>sr.append(h("div",{class:"stat-box"},h("div",{class:"stat-num",style:{color:c}},String(n)),h("div",{class:"stat-label"},l))));hdr.append(sr);
