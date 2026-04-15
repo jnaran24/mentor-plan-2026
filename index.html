@@ -218,6 +218,7 @@ let lastSaved="",currentUser=null,saveTimeout=null,saveMT=null,saveNT=null,unsub
 let kanbanColumns=["pendiente","en progreso","completado"];
 let allColumns=["pendiente","en progreso","completado"];
 let addingCol=false;
+let sidebarOpen=false;
 
 function h(tag,a,...ch){const el=document.createElement(tag);if(a)Object.entries(a).forEach(([k,v])=>{if(k==="style"&&typeof v==="object")Object.assign(el.style,v);else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==="class")el.className=v;else el.setAttribute(k,v)});ch.flat().forEach(c=>{if(c!=null)el.append(typeof c==="string"?document.createTextNode(c):c)});return el}
 function showToast(m){const t=document.getElementById("sync-toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
@@ -655,8 +656,17 @@ function render(){
   if(view==="checklist"){Object.entries(data).filter(([k])=>fMeta==="all"||fMeta===k).forEach(([mk,meta])=>{const items=meta.items.filter(i=>matchQ(i.q,fQ)&&(fSt==="all"||i.status===fSt));if(!items.length)return;const done=items.filter(i=>i.status==="completado").length;const sec=h("div",{class:"cl-section"});const hd=h("div",{class:"cl-head"});hd.append(h("div",{class:"cl-bar",style:{background:meta.color}}),h("h3",{style:{fontSize:"15px",fontWeight:"700"}},meta.title),h("span",{style:{fontSize:"12px",color:"var(--text3)",fontWeight:"600"}},"("+meta.weight+")"),h("span",{style:{fontSize:"12px",color:"#10b981",marginLeft:"auto",fontWeight:"600"}},done+"/"+items.length));sec.append(hd);items.forEach(i=>sec.append(renderItem({...i,mk,mt:meta.title,mc:meta.color,mw:meta.weight},true)));mainContent.append(sec)})}
 
   mainLayout.append(mainContent);
-  mainLayout.append(renderSidebar());
+  if(sidebarOpen){mainLayout.append(renderSidebar())}
   C.append(mainLayout);
+
+  // Sidebar toggle button
+  const updatedCount=getAllItems().filter(i=>i.updatedAt).length;
+  const toggleBtn=h("button",{class:"sidebar-toggle",title:sidebarOpen?"Ocultar actualizaciones":"Ver actualizaciones",onClick:()=>{sidebarOpen=!sidebarOpen;render()}});
+  toggleBtn.textContent=sidebarOpen?"✕":"🕐";
+  if(!sidebarOpen&&updatedCount>0){toggleBtn.append(h("span",{class:"badge-count"},String(Math.min(updatedCount,99))))}
+  C.append(toggleBtn);
+
+  if(sidebarOpen)document.querySelector(".app-container")?.classList.add("sidebar-open");
 
   C.append(h("div",{class:"footer"},h("strong",null,isAdmin?"Modo Admin. ":"Modo lectura. "),isAdmin?"Haz clic en ítems para detalles. En Kanban arrastra tarjetas. Usa el botón Mentees para gestionar tu equipo.":"Los cambios se sincronizan en tiempo real."));
   app.append(C);
